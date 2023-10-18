@@ -2,13 +2,12 @@ package ru.practicum.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import ru.practicum.entity.Endpoint;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface EndpointRepository extends JpaRepository<Endpoint, Long>, QuerydslPredicateExecutor<Endpoint> {
+public interface EndpointRepository extends JpaRepository<Endpoint, Long> {
 
     Endpoint findByUriEquals(String uri);
 
