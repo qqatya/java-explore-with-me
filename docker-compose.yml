@@ -21,6 +21,7 @@ services:
     depends_on:
       - ewm-stats-db
     environment:
+      - SERVER_PORT=9090
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-stats-db:5432/ewmstats
