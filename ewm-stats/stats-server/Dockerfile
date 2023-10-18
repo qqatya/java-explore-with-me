@@ -1,3 +1,3 @@
 FROM amazoncorretto:11
-COPY target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/ewm-stats-server.jar"]
+COPY target/*.jar ewm-stats-server.jar
+ENTRYPOINT ["java","-jar","./ewm-stats-server.jar"]

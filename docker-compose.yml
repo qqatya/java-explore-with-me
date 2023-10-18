@@ -3,18 +3,21 @@ services:
   ewm-stats-db:
     image: postgres:13.7
     container_name: ewm-stats-db
+    ports:
+      - "5432:5432"
     volumes:
       - /var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=ewmstats
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
+      - SPRING_DATASOURCE_DRIVERCLASSNAME=org.postgresql.Driver
 
   ewm-stats-server:
     build: ./ewm-stats/stats-server/
     container_name: ewm-stats-server
     ports:
-      - "8081:8080"
+      - "9090:8080"
     depends_on:
       - ewm-stats-db
     environment:

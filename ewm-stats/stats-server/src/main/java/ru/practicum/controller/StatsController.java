@@ -14,6 +14,7 @@ import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
@@ -47,10 +48,11 @@ public class StatsController {
     @GetMapping("/stats")
     public List<StatsDto> getStats(@NotNull @PastOrPresent @DateTimeFormat(pattern = DATE_TIME_PATTERN)
                                    @RequestParam LocalDateTime start,
-                                   @NotNull @PastOrPresent @DateTimeFormat(pattern = DATE_TIME_PATTERN)
+                                   @NotNull @DateTimeFormat(pattern = DATE_TIME_PATTERN)
                                    @RequestParam LocalDateTime end,
                                    @RequestParam(required = false) List<String> uris,
                                    @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+        checkArgument(start.isBefore(end), "start date should be less than or equal to end date");
         return statsService.getStats(start, end, uris, unique);
     }
 }
