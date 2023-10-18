@@ -13,7 +13,7 @@ services:
       - POSTGRES_PASSWORD=root
       - SPRING_DATASOURCE_DRIVERCLASSNAME=org.postgresql.Driver
 
-  ewm-stats-server:
+  stats-server:
     build: ./ewm-stats/stats-server/
     container_name: ewm-stats-server
     ports:
