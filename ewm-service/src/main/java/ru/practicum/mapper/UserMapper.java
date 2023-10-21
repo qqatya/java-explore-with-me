@@ -1,7 +1,8 @@
 package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.dto.UserDto;
+import ru.practicum.dto.user.UserDto;
+import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.entity.User;
 
 import java.util.List;
@@ -30,4 +31,10 @@ public class UserMapper {
         return users.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    public UserShortDto mapToUserShortDto(User user) {
+        return UserShortDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .build();
+    }
 }

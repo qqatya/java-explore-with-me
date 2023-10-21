@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.dto.UserDto;
+import ru.practicum.dto.user.UserDto;
 import ru.practicum.entity.User;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.UserMapper;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> findByIds(List<Long> ids) {
         log.info("searching for users with ids in: {}", ids);
-        List<User> users = userRepository.findUsersByIdIn(ids);
+        List<User> users = userRepository.findByIdIn(ids);
 
         log.info("found {} users", users.size());
         return userMapper.mapToDtos(users);
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     public UserDto create(UserDto dto) {
         String email = dto.getEmail();
 
-        if (userRepository.findUserByEmailEquals(email).isPresent()) {
+        if (userRepository.findByEmailEquals(email).isPresent()) {
             throw new ValidationException(String.format(EMAIL_ALREADY_EXISTS.getValue(), email));
         }
         User user = userRepository.save(userMapper.mapToEntity(dto));

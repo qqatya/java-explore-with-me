@@ -25,7 +25,7 @@ public class CategoryController {
      */
     @PostMapping
     @ResponseStatus(CREATED)
-    public CategoryDto create(@Valid CategoryDto dto) {
+    public CategoryDto create(@Valid @RequestBody CategoryDto dto) {
         return categoryService.create(dto);
     }
 
@@ -36,8 +36,8 @@ public class CategoryController {
      * @return Измененная категория
      */
     @PatchMapping("/{id}")
-    public CategoryDto update(@PathVariable("id") Long id) {
-        return categoryService.update(id);
+    public CategoryDto update(@PathVariable("id") Long id, @Valid @RequestBody CategoryDto dto) {
+        return categoryService.update(id, dto);
     }
 
     /**

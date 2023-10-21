@@ -3,6 +3,7 @@ package ru.practicum.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.HitRequestDto;
 import ru.practicum.dto.StatsDto;
 import ru.practicum.entity.Endpoint;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class StatsServiceImpl implements StatsService {
 
     private final HitMapper hitMapper;
@@ -46,6 +48,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         log.info("getting stats by start = {}, end = {}, URIs = {}, unique = {}", start, end, uris, unique);
         List<Endpoint> endpoints = endpointRepository.findBySentDttmRange(start, end);

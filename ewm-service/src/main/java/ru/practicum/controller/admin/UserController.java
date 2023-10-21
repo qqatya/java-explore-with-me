@@ -3,7 +3,7 @@ package ru.practicum.controller.admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.UserDto;
+import ru.practicum.dto.user.UserDto;
 import ru.practicum.service.UserService;
 
 import javax.validation.Valid;
@@ -47,7 +47,7 @@ public class UserController {
      */
     @PostMapping
     @ResponseStatus(CREATED)
-    public UserDto create(@Valid UserDto dto) {
+    public UserDto create(@Valid @RequestBody UserDto dto) {
         return userService.create(dto);
     }
 

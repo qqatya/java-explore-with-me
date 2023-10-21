@@ -60,6 +60,20 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Обработчик SecurityException
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(SecurityException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ErrorInfo processValidationException(SecurityException e, HttpStatus status) {
+        log.debug(e.getMessage());
+        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+    }
+
+    /**
      * Обработчик непредвиденных ошибок
      *
      * @param e Эксепшн

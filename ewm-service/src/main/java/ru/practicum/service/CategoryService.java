@@ -15,10 +15,11 @@ public interface CategoryService {
     /**
      * Изменение категории
      *
-     * @param id Идентификатор категории
+     * @param id  Идентификатор категории
+     * @param dto Объект, содержащий данные о категории
      * @return Измененная категория
      */
-    CategoryDto update(Long id);
+    CategoryDto update(Long id, CategoryDto dto);
 
     /**
      * Удаление категории
