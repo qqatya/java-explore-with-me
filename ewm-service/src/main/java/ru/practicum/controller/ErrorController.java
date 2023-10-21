@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import ru.practicum.dto.ErrorInfo;
 import ru.practicum.exception.NotFoundException;
 
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -31,15 +32,29 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Обработчик IllegalArgumentException
+     * Обработчик NotFoundException
      *
      * @param e Эксепшн
      * @return Объект, содержащий сообщение об ошибке
      */
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorInfo processIllegalArgumentException(NotFoundException e, HttpStatus status) {
+    public ErrorInfo processNotFoundException(NotFoundException e, HttpStatus status) {
+        log.debug(e.getMessage());
+        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+    }
+
+    /**
+     * Обработчик ValidationException
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorInfo processValidationException(ValidationException e, HttpStatus status) {
         log.debug(e.getMessage());
         return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
     }
