@@ -68,7 +68,22 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(SecurityException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ErrorInfo processValidationException(SecurityException e, HttpStatus status) {
+    public ErrorInfo processSecurityException(SecurityException e, HttpStatus status) {
+        log.debug(e.getMessage());
+        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+    }
+
+
+    /**
+     * Обработчик IllegalStateException
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ErrorInfo processIllegalStateException(IllegalStateException e, HttpStatus status) {
         log.debug(e.getMessage());
         return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
     }

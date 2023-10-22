@@ -1,5 +1,7 @@
 package ru.practicum.service.impl;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -9,10 +11,8 @@ import ru.practicum.dto.event.EventDetailDto;
 import ru.practicum.dto.event.EventRequestDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.location.LocationDto;
-import ru.practicum.entity.Category;
-import ru.practicum.entity.Event;
-import ru.practicum.entity.Location;
-import ru.practicum.entity.User;
+import ru.practicum.dto.type.PublicationState;
+import ru.practicum.entity.*;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.repository.CategoryRepository;
@@ -27,7 +27,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.dto.type.PublicationState.PENDING;
 import static ru.practicum.dto.type.PublicationState.PUBLISHED;
+import static ru.practicum.dto.type.PublicationStateAction.PUBLISH_EVENT;
+import static ru.practicum.dto.type.PublicationStateAction.REJECT_EVENT;
 import static ru.practicum.exception.type.ExceptionType.*;
 
 @Service
@@ -109,6 +112,68 @@ public class EventServiceImpl implements EventService {
         return mapToDetailDto(updated);
     }
 
+    @Override
+    public List<EventDetailDto> find(List<Long> userIds, List<PublicationState> states, List<Long> categoryIds,
+                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+        log.info("searching for events by userIds = {}, states = {}, categoryIds = {}, rangeStart = {}, rangeEnd = {}, "
+                + "from = {}, size = {}", userIds, states, categoryIds, rangeStart, rangeEnd, from, size);
+        BooleanExpression userIdsIn = QEvent.event.initiator.id.in(userIds);
+        BooleanExpression publicationStatesIn = QEvent.event.publicationState.in(states);
+        BooleanExpression categoryIdsIn = QEvent.event.category.id.in(categoryIds);
+        BooleanExpression eventDateAfterOrEq = QEvent.event.eventDate.goe(rangeStart);
+        BooleanExpression eventDateBeforeOrEq = QEvent.event.eventDate.loe(rangeEnd);
+        int page = from != 0 ? from / size : from;
+        Pageable pageable = PageRequest.of(page, size);
+        BooleanBuilder filters = new BooleanBuilder();
+
+        if (userIds != null && !userIds.isEmpty()) {
+            filters.and(userIdsIn);
+        }
+        if (states != null && !states.isEmpty()) {
+            filters.and(publicationStatesIn);
+        }
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            filters.and(categoryIdsIn);
+        }
+        if (rangeStart != null) {
+            filters.and(eventDateAfterOrEq);
+        }
+        if (rangeEnd != null) {
+            filters.and(eventDateBeforeOrEq);
+        }
+        List<Event> events = eventRepository.findAll(filters, pageable).getContent();
+
+        log.info("found {} events", events.size());
+        return events.stream().map(this::mapToDetailDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public EventDetailDto update(Long eventId, EventRequestDto dto) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(EVENT_NOT_FOUND.getValue(), eventId)));
+
+        if (REJECT_EVENT.equals(dto.getStateAction()) && PUBLISHED.equals(event.getPublicationState())) {
+            throw new IllegalStateException(String.format(EVENT_ALREADY_PUBLISHED.getValue(), eventId));
+        }
+        if (PUBLISH_EVENT.equals(dto.getStateAction()) && !PENDING.equals(event.getPublicationState())) {
+            throw new IllegalStateException(EVENT_MUST_BE_PENDING.getValue());
+        }
+        LocalDateTime publicationDate = event.getPublicationDate() != null ? event.getPublicationDate()
+                : LocalDateTime.now();
+
+        if (!eventDateIsAfterOrEqHourBeforePublicationDate(event.getEventDate(), publicationDate)) {
+            throw new IllegalStateException(EVENT_UNAVAILABLE_FOR_EDITING_ADMIN.getValue());
+        }
+        Category category = getCategoryForUpdate(dto.getCategory(), event.getCategory());
+        Location location = getLocationForUpdate(dto.getLocation(), event.getLocation());
+
+        Event updated = eventRepository.save(eventMapper
+                .mapToEntityForUpdate(event, dto, category, location, event.getInitiator()));
+        log.info("event: {} has been updated", updated);
+
+        return mapToDetailDto(updated);
+    }
+
     private boolean isEventDateWithinTwoHours(LocalDateTime eventDate) {
         LocalDateTime withinTwoHours = LocalDateTime.now().plusHours(2);
 
@@ -145,4 +210,11 @@ public class EventServiceImpl implements EventService {
     private List<String> createUris(Long eventId) {
         return List.of("/events/" + eventId);
     }
+
+    private boolean eventDateIsAfterOrEqHourBeforePublicationDate(LocalDateTime eventDate,
+                                                                  LocalDateTime publicationDate) {
+        LocalDateTime plusHour = publicationDate.plusHours(1);
+        return eventDate.equals(plusHour) || eventDate.isAfter(plusHour);
+    }
+
 }
