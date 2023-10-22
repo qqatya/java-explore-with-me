@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.entity.User;
 import ru.practicum.exception.NotFoundException;
@@ -21,6 +22,7 @@ import static ru.practicum.exception.type.ExceptionType.USER_NOT_FOUND;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> findByIds(List<Long> ids) {
         log.info("searching for users with ids in: {}", ids);
         List<User> users = userRepository.findByIdIn(ids);
@@ -37,6 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> find(Integer from, Integer size) {
         log.info("searching for users from = {}, size = {}", from, size);
         int page = from != 0 ? from / size : from;

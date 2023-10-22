@@ -17,6 +17,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequestMapping("/users/{userId}/events")
 @Validated
@@ -50,6 +52,7 @@ public class EventController {
      * @return Добавленное событие
      */
     @PostMapping
+    @ResponseStatus(CREATED)
     public EventDetailDto create(@PathVariable Long userId,
                                  @Validated(CreateEvent.class) @RequestBody EventRequestDto dto) {
         return eventService.create(userId, dto);

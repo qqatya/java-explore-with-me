@@ -2,6 +2,8 @@ package ru.practicum.service;
 
 import ru.practicum.dto.CategoryDto;
 
+import java.util.List;
+
 public interface CategoryService {
 
     /**
@@ -27,4 +29,21 @@ public interface CategoryService {
      * @param id Идентификатор категории
      */
     void delete(Long id);
+
+    /**
+     * Поиск категорий событий
+     *
+     * @param from Начальный элемент
+     * @param size Количество отображаемых элементов
+     * @return Список категорий
+     */
+    List<CategoryDto> find(Integer from, Integer size);
+
+    /**
+     * Поиск категории событий по идентификатору
+     *
+     * @param id Идентификатор категории
+     * @return Категория
+     */
+    CategoryDto findById(Long id);
 }

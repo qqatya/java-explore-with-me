@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.event.EventDetailDto;
 import ru.practicum.dto.event.EventRequestDto;
 import ru.practicum.dto.event.EventShortDto;
@@ -36,6 +37,7 @@ import static ru.practicum.exception.type.ExceptionType.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
@@ -53,6 +55,7 @@ public class EventServiceImpl implements EventService {
     private final StatsService statsService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
         if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundException(String.format(USER_NOT_FOUND.getValue(), userId));
@@ -81,6 +84,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventDetailDto getDetailInfo(Long userId, Long eventId) {
         if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundException(String.format(USER_NOT_FOUND.getValue(), userId));
@@ -113,6 +117,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventDetailDto> find(List<Long> userIds, List<PublicationState> states, List<Long> categoryIds,
                                      LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         log.info("searching for events by userIds = {}, states = {}, categoryIds = {}, rangeStart = {}, rangeEnd = {}, "

@@ -19,7 +19,8 @@ public enum ExceptionType {
     EVENT_ALREADY_PUBLISHED("Cannot reject publication of already published event with id = %s"),
     EVENT_MUST_BE_PENDING("Cannot publish event with status not equal to PENDING"),
     EVENT_UNAVAILABLE_FOR_EDITING_ADMIN("Events can be changed only if event date is 1 or more hours less than "
-            + "publication date");
+            + "publication date"),
+    CATEGORY_HAS_EVENTS("Category with id = %s has events");
 
     private final String value;
 }
