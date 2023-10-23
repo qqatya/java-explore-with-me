@@ -32,19 +32,32 @@ COMMENT ON COLUMN locations.location_id IS 'Идентификатор мест�
 COMMENT ON COLUMN locations.latitude IS 'Широта';
 COMMENT ON COLUMN locations.longitude IS 'Долгота';
 
+CREATE TABLE IF NOT EXISTS compilations
+(
+    compilation_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title          VARCHAR(50) NOT NULL,
+    pinned         BOOLEAN     NOT NULL DEFAULT false
+);
+
+COMMENT ON TABLE compilations IS 'Подборки событий';
+COMMENT ON COLUMN compilations.compilation_id IS 'Идентификатор подборки';
+COMMENT ON COLUMN compilations.title IS 'Заголовок';
+COMMENT ON COLUMN compilations.pinned IS 'Признак закрепления на главной странице';
+
 CREATE TABLE IF NOT EXISTS events
 (
     event_id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title             VARCHAR(120)  NOT NULL,
     annotation        VARCHAR(2000) NOT NULL,
-    category_id       BIGINT REFERENCES categories (category_id) ON DELETE CASCADE,
+    category_id       BIGINT        NOT NULL REFERENCES categories (category_id) ON DELETE CASCADE,
     description       VARCHAR(7000) NOT NULL,
-    initiator_id      BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
+    initiator_id      BIGINT        NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
     event_dttm        TIMESTAMP     NOT NULL,
-    location_id       BIGINT REFERENCES locations (location_id) ON DELETE RESTRICT,
+    location_id       BIGINT        NOT NULL REFERENCES locations (location_id) ON DELETE RESTRICT,
     paid              BOOLEAN       NOT NULL DEFAULT false,
     participant_limit INT           NOT NULL DEFAULT 0,
     moderated         BOOLEAN       NOT NULL DEFAULT false,
+    compilation_id    BIGINT REFERENCES compilations (compilation_id) ON DELETE CASCADE,
     publication_state VARCHAR(10)   NOT NULL,
     publication_dttm  TIMESTAMP,
     create_dttm       TIMESTAMP     NOT NULL DEFAULT now()
@@ -62,6 +75,7 @@ COMMENT ON COLUMN events.location_id IS 'Идентификатор коорди
 COMMENT ON COLUMN events.paid IS 'Признак платного события';
 COMMENT ON COLUMN events.participant_limit IS 'Максимальное количество участников';
 COMMENT ON COLUMN events.moderated IS 'Признак модерации запросов';
+COMMENT ON COLUMN events.compilation_id IS 'Идентификатор подборки';
 COMMENT ON COLUMN events.publication_state IS 'Статус публикации события';
 COMMENT ON COLUMN events.publication_dttm IS 'Дата публикации';
 COMMENT ON COLUMN events.create_dttm IS 'Дата создания';
@@ -70,8 +84,8 @@ CREATE TABLE IF NOT EXISTS requests
 (
     request_id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     create_dttm  TIMESTAMP   NOT NULL,
-    event_id     BIGINT REFERENCES events (event_id) ON DELETE CASCADE,
-    requester_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
+    event_id     BIGINT      NOT NULL REFERENCES events (event_id) ON DELETE CASCADE,
+    requester_id BIGINT      NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
     status       VARCHAR(10) NOT NULL
 );
 

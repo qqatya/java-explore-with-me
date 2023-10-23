@@ -4,6 +4,7 @@ import ru.practicum.dto.event.EventDetailDto;
 import ru.practicum.dto.event.EventRequestDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.type.PublicationState;
+import ru.practicum.entity.Event;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,5 +72,13 @@ public interface EventService {
      * @return Измененное событие
      */
     EventDetailDto update(Long eventId, EventRequestDto dto);
+
+    /**
+     * Преобразование событий в объекты с краткой информацией
+     *
+     * @param events События
+     * @return Список объектов с краткой информации о событиях
+     */
+    List<EventShortDto> mapToShortDtos(List<Event> events);
 
 }

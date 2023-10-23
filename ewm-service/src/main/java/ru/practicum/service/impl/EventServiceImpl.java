@@ -179,6 +179,17 @@ public class EventServiceImpl implements EventService {
         return mapToDetailDto(updated);
     }
 
+    @Override
+    public List<EventShortDto> mapToShortDtos(List<Event> events) {
+        return events.stream()
+                .map(e -> {
+                    Long views = statsService.getViews(e.getCreateDate(), LocalDateTime.now(), createUris(e.getId()));
+
+                    return eventMapper.mapToShortDto(e, requestService.findConfirmedRequestsAmount(e.getId()), views);
+                })
+                .collect(Collectors.toList());
+    }
+
     private boolean isEventDateWithinTwoHours(LocalDateTime eventDate) {
         LocalDateTime withinTwoHours = LocalDateTime.now().plusHours(2);
 
@@ -194,16 +205,6 @@ public class EventServiceImpl implements EventService {
     private Location getLocationForUpdate(LocationDto dto, Location existing) {
         return dto != null ? locationService.findOrCreateLocation(dto)
                 : existing;
-    }
-
-    private List<EventShortDto> mapToShortDtos(List<Event> events) {
-        return events.stream()
-                .map(e -> {
-                    Long views = statsService.getViews(e.getCreateDate(), LocalDateTime.now(), createUris(e.getId()));
-
-                    return eventMapper.mapToShortDto(e, requestService.findConfirmedRequestsAmount(e.getId()), views);
-                })
-                .collect(Collectors.toList());
     }
 
     private EventDetailDto mapToDetailDto(Event event) {

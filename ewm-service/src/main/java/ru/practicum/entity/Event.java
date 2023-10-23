@@ -55,6 +55,11 @@ public class Event {
     @Column(name = "moderated")
     private Boolean requestModeration;
 
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "compilation_id")
+    private Compilation compilation;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "publication_state")
     private PublicationState publicationState;
