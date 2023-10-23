@@ -93,16 +93,16 @@ public class EventController {
      */
     @GetMapping("/{eventId}/requests")
     public List<RequestDto> getRequests(@PathVariable Long userId, @PathVariable Long eventId) {
-        return requestService.getRequests(userId, eventId);
+        return requestService.findRequests(userId, eventId);
     }
 
     /**
-     * Изменение статуса заявок на участие в событии текущего пользователя
+     * Изменение статуса запросов на участие в событии текущего пользователя
      *
      * @param userId  Идентификатор пользователя
      * @param eventId Идентификатор события
      * @param dto     Объект, содержащий данные для изменения статуса
-     * @return Объект, содержащий списки подтвержденных и отклоненных заявок
+     * @return Объект, содержащий списки подтвержденных и отклоненных запросов
      */
     @PatchMapping("/{eventId}/requests")
     public RequestStatusDto changeStatus(@PathVariable Long userId, @PathVariable Long eventId,

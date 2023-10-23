@@ -15,7 +15,7 @@ public interface RequestService {
      * @param eventId Идентификатор события
      * @return Список запросов на участие
      */
-    List<RequestDto> getRequests(Long userId, Long eventId);
+    List<RequestDto> findRequests(Long userId, Long eventId);
 
 
     /**
@@ -36,4 +36,29 @@ public interface RequestService {
      */
     Integer findConfirmedRequestsAmount(Long eventId);
 
+    /**
+     * Получение информации о запросах текущего пользователя на участие в чужих событиях
+     *
+     * @param userId Идентификатор текущего пользователя
+     * @return Список запросов
+     */
+    List<RequestDto> findRequests(Long userId);
+
+    /**
+     * Добавление запроса от текущего пользователя на участие в событии
+     *
+     * @param requesterId Идентификатор текущего пользователя
+     * @param eventId     Идентификатор события
+     * @return Созданный запрос
+     */
+    RequestDto create(Long requesterId, Long eventId);
+
+    /**
+     * Отмена запроса на участие в событии
+     *
+     * @param requesterId Идентификатор текущего пользователя
+     * @param requestId   Идентификатор заявки
+     * @return Объект, содержащий информацию об отмене
+     */
+    RequestDto cancel(Long requesterId, Long requestId);
 }

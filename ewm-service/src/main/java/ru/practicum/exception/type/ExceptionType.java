@@ -20,7 +20,11 @@ public enum ExceptionType {
     EVENT_MUST_BE_PENDING("Cannot publish event with status not equal to PENDING"),
     EVENT_UNAVAILABLE_FOR_EDITING_ADMIN("Events can be changed only if event date is 1 or more hours less than "
             + "publication date"),
-    CATEGORY_HAS_EVENTS("Category with id = %s has events");
+    CATEGORY_HAS_EVENTS("Category with id = %s has events"),
+    REQUEST_DUPLICATE("Request with requesterId = %s and eventId = %s already exists"),
+    EVENT_INITIATED_BY_REQUESTER("Cannot create requests from event initiator"),
+    REQUEST_FOR_UNPUBLISHED_EVENT("Requests for unpublished events are not accepted"),
+    REQUEST_ALREADY_REJECTED("Request with id = %s was already rejected");
 
     private final String value;
 }

@@ -3,10 +3,15 @@ package ru.practicum.mapper;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.event.request.RequestDto;
 import ru.practicum.dto.event.request.RequestStatusDto;
+import ru.practicum.entity.Event;
 import ru.practicum.entity.Request;
+import ru.practicum.entity.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.dto.type.RequestStatus.CONFIRMED;
+import static ru.practicum.dto.type.RequestStatus.PENDING;
 
 @Component
 public class RequestMapper {
@@ -29,6 +34,14 @@ public class RequestMapper {
         return RequestStatusDto.builder()
                 .confirmedRequests(mapToDtos(confirmed))
                 .rejectedRequests(mapToDtos(rejected))
+                .build();
+    }
+
+    public Request mapToEntity(User requester, Event event, boolean isPreModerated) {
+        return Request.builder()
+                .requester(requester)
+                .event(event)
+                .status(isPreModerated ? PENDING : CONFIRMED)
                 .build();
     }
 }

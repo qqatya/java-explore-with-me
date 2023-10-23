@@ -10,6 +10,7 @@ import ru.practicum.dto.event.request.RequestStatusUpdateDto;
 import ru.practicum.dto.type.RequestStatus;
 import ru.practicum.entity.Event;
 import ru.practicum.entity.Request;
+import ru.practicum.entity.User;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.repository.EventRepository;
@@ -20,6 +21,8 @@ import ru.practicum.service.RequestService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static ru.practicum.dto.type.PublicationState.PUBLISHED;
 import static ru.practicum.dto.type.RequestStatus.*;
 import static ru.practicum.exception.type.ExceptionType.*;
 
@@ -39,8 +42,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RequestDto> getRequests(Long userId, Long eventId) {
-        List<Request> requests = requestRepository.findByRequesterIdAndEventId(userId, eventId);
+    public List<RequestDto> findRequests(Long userId, Long eventId) {
+        List<Request> requests = requestRepository.findByEventInitiatorIdAndEventId(userId, eventId);
 
         log.info("found {} requests by eventId = {}", requests.size(), eventId);
         return requestMapper.mapToDtos(requests);
@@ -79,11 +82,61 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.findByEventIdAndStatusEquals(eventId, CONFIRMED).size();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<RequestDto> findRequests(Long userId) {
+        List<Request> requests = requestRepository.findByRequesterId(userId);
+
+        log.info("found {} requests of userId = {}", requests.size(), userId);
+        return requestMapper.mapToDtos(requests);
+    }
+
+    @Override
+    public RequestDto create(Long requesterId, Long eventId) {
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), requesterId)));
+        if (requestRepository.findByRequesterIdAndEventId(requesterId, eventId).isPresent()) {
+            throw new IllegalStateException(String.format(REQUEST_DUPLICATE.getValue(), requesterId, eventId));
+        }
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(EVENT_NOT_FOUND.getValue(), eventId)));
+
+        if (requesterId.equals(event.getInitiator().getId())) {
+            throw new IllegalStateException(EVENT_INITIATED_BY_REQUESTER.getValue());
+        }
+        checkParticipantLimit(event.getParticipantLimit(), eventId);
+        if (!PUBLISHED.equals(event.getPublicationState())) {
+            throw new SecurityException(REQUEST_FOR_UNPUBLISHED_EVENT.getValue());
+        }
+        Request request = requestRepository.save(requestMapper.mapToEntity(requester, event,
+                event.getRequestModeration()));
+
+        log.info("created new request: {}", request);
+        return requestMapper.mapToDto(request);
+    }
+
+    @Override
+    public RequestDto cancel(Long requesterId, Long requestId) {
+        if (userRepository.findById(requesterId).isEmpty()) {
+            throw new NotFoundException(String.format(USER_NOT_FOUND.getValue(), requesterId));
+        }
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException(String.format(REQUEST_NOT_FOUND.getValue(), requestId)));
+
+        checkArgument(!REJECTED.equals(request.getStatus()),
+                String.format(REQUEST_ALREADY_REJECTED.getValue(), requestId));
+        request.setStatus(REJECTED);
+        Request canceled = requestRepository.save(request);
+
+        log.info("requestId = {} has been canceled", requestId);
+        return requestMapper.mapToDto(canceled);
+    }
+
     private RequestStatusDto fillDtoFields(Long userId, Long eventId) {
         List<Request> confirmed = new ArrayList<>();
         List<Request> rejected = new ArrayList<>();
 
-        requestRepository.findByRequesterIdAndEventId(userId, eventId).forEach(r -> {
+        requestRepository.findByEventInitiatorIdAndEventId(userId, eventId).forEach(r -> {
             if (CONFIRMED.equals(r.getStatus())) {
                 confirmed.add(r);
             } else if (REJECTED.equals(r.getStatus())) {

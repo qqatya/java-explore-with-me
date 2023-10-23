@@ -61,7 +61,7 @@ COMMENT ON COLUMN events.event_dttm IS 'Дата и время прохожде�
 COMMENT ON COLUMN events.location_id IS 'Идентификатор координат места прохождения';
 COMMENT ON COLUMN events.paid IS 'Признак платного события';
 COMMENT ON COLUMN events.participant_limit IS 'Максимальное количество участников';
-COMMENT ON COLUMN events.moderated IS 'Признак модерации заявок';
+COMMENT ON COLUMN events.moderated IS 'Признак модерации запросов';
 COMMENT ON COLUMN events.publication_state IS 'Статус публикации события';
 COMMENT ON COLUMN events.publication_dttm IS 'Дата публикации';
 COMMENT ON COLUMN events.create_dttm IS 'Дата создания';
