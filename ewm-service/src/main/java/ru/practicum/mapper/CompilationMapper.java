@@ -2,7 +2,7 @@ package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.compilation.CompilationRequestDto;
-import ru.practicum.dto.compilation.CompilationResponseDto;
+import ru.practicum.dto.compilation.CompilationDetailDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.entity.Compilation;
 
@@ -17,8 +17,8 @@ public class CompilationMapper {
                 .build();
     }
 
-    public CompilationResponseDto mapToDto(Compilation compilation, List<EventShortDto> events) {
-        return CompilationResponseDto.builder()
+    public CompilationDetailDto mapToDto(Compilation compilation, List<EventShortDto> events) {
+        return CompilationDetailDto.builder()
                 .id(compilation.getId())
                 .title(compilation.getTitle())
                 .pinned(compilation.getPinned())

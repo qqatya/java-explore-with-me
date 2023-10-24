@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompilationResponseDto {
+public class CompilationDetailDto {
 
     private Long id;
 

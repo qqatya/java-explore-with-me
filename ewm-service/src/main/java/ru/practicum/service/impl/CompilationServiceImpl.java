@@ -2,10 +2,12 @@ package ru.practicum.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.compilation.CompilationRequestDto;
-import ru.practicum.dto.compilation.CompilationResponseDto;
+import ru.practicum.dto.compilation.CompilationDetailDto;
 import ru.practicum.entity.Compilation;
 import ru.practicum.entity.Event;
 import ru.practicum.exception.NotFoundException;
@@ -37,7 +39,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventService eventService;
 
     @Override
-    public CompilationResponseDto create(CompilationRequestDto dto) {
+    public CompilationDetailDto create(CompilationRequestDto dto) {
         Compilation compilation = compilationRepository.save(compilationMapper.mapToEntity(dto));
         log.info("created compilation: {}", compilation);
 
@@ -68,7 +70,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public CompilationResponseDto update(Long id, CompilationRequestDto dto) {
+    public CompilationDetailDto update(Long id, CompilationRequestDto dto) {
         Compilation existing = compilationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format(COMPILATION_NOT_FOUND.getValue(), id)));
         Compilation updated = compilationRepository.save(compilationMapper.mapToEntityForUpdate(existing, dto, id));
@@ -80,6 +82,31 @@ public class CompilationServiceImpl implements CompilationService {
         }
         log.info("updated compilationId = {}", id);
         return compilationMapper.mapToDto(updated, eventService.mapToShortDtos(events));
+    }
+
+    @Override
+    public List<CompilationDetailDto> find(Boolean pinned, Integer from, Integer size) {
+        int page = from != 0 ? from / size : from;
+        Pageable pageable = PageRequest.of(page, size);
+        List<Compilation> compilations = compilationRepository.find(pinned, pageable).getContent();
+
+        log.info("found {} compilations", compilations.size());
+        return compilations.stream()
+                .map(c -> {
+                    List<Event> events = eventRepository.findByCompilationId(c.getId());
+                    return compilationMapper.mapToDto(c, eventService.mapToShortDtos(events));
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CompilationDetailDto findById(Long id) {
+        Compilation compilation = compilationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format(COMPILATION_NOT_FOUND.getValue(), id)));
+        List<Event> events = eventRepository.findByCompilationId(compilation.getId());
+
+        log.info("found compilationId = {}", id);
+        return compilationMapper.mapToDto(compilation, eventService.mapToShortDtos(events));
     }
 
     private List<Event> updateConnectedEvents(List<Long> eventIds, Compilation updated) {

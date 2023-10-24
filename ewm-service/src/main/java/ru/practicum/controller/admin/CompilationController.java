@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.compilation.CompilationRequestDto;
-import ru.practicum.dto.compilation.CompilationResponseDto;
+import ru.practicum.dto.compilation.CompilationDetailDto;
 import ru.practicum.service.CompilationService;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -25,7 +25,7 @@ public class CompilationController {
      */
     @PostMapping
     @ResponseStatus(CREATED)
-    public CompilationResponseDto create(@RequestBody CompilationRequestDto dto) {
+    public CompilationDetailDto create(@RequestBody CompilationRequestDto dto) {
         return compilationService.create(dto);
     }
 
@@ -46,7 +46,7 @@ public class CompilationController {
      * @return Обновленная подборка
      */
     @PatchMapping("/{id}")
-    public CompilationResponseDto update(@PathVariable Long id, @RequestBody CompilationRequestDto dto) {
+    public CompilationDetailDto update(@PathVariable Long id, @RequestBody CompilationRequestDto dto) {
         return compilationService.update(id, dto);
     }
 }
