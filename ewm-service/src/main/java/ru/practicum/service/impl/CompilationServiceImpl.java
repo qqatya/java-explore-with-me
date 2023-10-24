@@ -88,7 +88,7 @@ public class CompilationServiceImpl implements CompilationService {
     public List<CompilationDetailDto> find(Boolean pinned, Integer from, Integer size) {
         int page = from != 0 ? from / size : from;
         Pageable pageable = PageRequest.of(page, size);
-        List<Compilation> compilations = compilationRepository.find(pinned, pageable).getContent();
+        List<Compilation> compilations = compilationRepository.findByPinnedEquals(pinned, pageable);
 
         log.info("found {} compilations", compilations.size());
         return compilations.stream()

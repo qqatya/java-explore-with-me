@@ -1,8 +1,9 @@
 package ru.practicum.service;
 
 import ru.practicum.dto.event.EventDetailDto;
-import ru.practicum.dto.event.EventRequestDto;
+import ru.practicum.dto.event.EventCreateDto;
 import ru.practicum.dto.event.EventShortDto;
+import ru.practicum.dto.event.EventUpdateDto;
 import ru.practicum.dto.type.PublicationState;
 import ru.practicum.entity.Event;
 
@@ -28,7 +29,7 @@ public interface EventService {
      * @param dto    Объект, содержащий информацию о событии
      * @return Добавленное событие
      */
-    EventDetailDto create(Long userId, EventRequestDto dto);
+    EventDetailDto create(Long userId, EventCreateDto dto);
 
     /**
      * Получение полной информации о событии, добавленном текущим пользователем
@@ -47,7 +48,7 @@ public interface EventService {
      * @param dto     Объект, содержащий информацию о событии
      * @return Измененное событие
      */
-    EventDetailDto update(Long userId, Long eventId, EventRequestDto dto);
+    EventDetailDto updateByUser(Long userId, Long eventId, EventUpdateDto dto);
 
     /**
      * Поиск событий администратором
@@ -71,7 +72,7 @@ public interface EventService {
      * @param dto     Объект, содержащий информацию о событии
      * @return Измененное событие
      */
-    EventDetailDto update(Long eventId, EventRequestDto dto);
+    EventDetailDto updateByAdmin(Long eventId, EventUpdateDto dto);
 
     /**
      * Преобразование событий в объекты с краткой информацией

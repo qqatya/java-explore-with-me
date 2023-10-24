@@ -1,14 +1,12 @@
 package ru.practicum.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ErrorInfo {
 
@@ -18,6 +16,14 @@ public class ErrorInfo {
 
     private String message;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    private String timestamp;
+
+    public ErrorInfo(String status, String reason, String message, LocalDateTime timestamp) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        this.status = status;
+        this.reason = reason;
+        this.message = message;
+        this.timestamp = formatter.format(timestamp);
+    }
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.validation.CreateEvent;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,10 +13,10 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class LocationDto {
 
-    @NotNull(groups = CreateEvent.class)
+    @NotNull
     private Double lat;
 
-    @NotNull(groups = CreateEvent.class)
+    @NotNull
     private Double lon;
 
 }

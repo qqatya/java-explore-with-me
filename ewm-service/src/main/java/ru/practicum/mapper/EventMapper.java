@@ -3,18 +3,21 @@ package ru.practicum.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.event.EventDetailDto;
-import ru.practicum.dto.event.EventRequestDto;
+import ru.practicum.dto.event.EventCreateDto;
 import ru.practicum.dto.event.EventShortDto;
+import ru.practicum.dto.event.EventUpdateDto;
+import ru.practicum.dto.type.EventAction;
 import ru.practicum.dto.type.PublicationState;
-import ru.practicum.dto.type.PublicationStateAction;
 import ru.practicum.entity.Category;
 import ru.practicum.entity.Event;
 import ru.practicum.entity.Location;
 import ru.practicum.entity.User;
 
-import static ru.practicum.dto.type.PublicationState.CANCELED;
-import static ru.practicum.dto.type.PublicationState.PUBLISHED;
-import static ru.practicum.dto.type.PublicationStateAction.PUBLISH_EVENT;
+import java.time.LocalDateTime;
+
+import static ru.practicum.dto.type.EventAction.PUBLISH_EVENT;
+import static ru.practicum.dto.type.PublicationState.*;
+import static ru.practicum.exception.type.ExceptionType.STATE_NOT_FOUND;
 
 @Component
 @RequiredArgsConstructor
@@ -40,18 +43,21 @@ public class EventMapper {
                 .build();
     }
 
-    public Event mapToEntity(EventRequestDto dto, Category category, Location location, User initiator) {
+    public Event mapToEntity(EventCreateDto dto, Category category, Location location, User initiator) {
         return Event.builder()
                 .title(dto.getTitle())
                 .annotation(dto.getAnnotation())
                 .category(category)
                 .description(dto.getDescription())
                 .initiator(initiator)
+                .createDate(LocalDateTime.now())
                 .eventDate(dto.getEventDate())
                 .location(location)
                 .paid(dto.getPaid())
                 .participantLimit(dto.getParticipantLimit())
                 .requestModeration(dto.getRequestModeration())
+                .publicationState(PENDING)
+                .createDate(LocalDateTime.now())
                 .build();
     }
 
@@ -76,8 +82,10 @@ public class EventMapper {
                 .build();
     }
 
-    public Event mapToEntityForUpdate(Event event, EventRequestDto dto, Category category, Location location,
+    public Event mapToEntityForUpdate(Event event, EventUpdateDto dto, Category category, Location location,
                                       User initiator) {
+        LocalDateTime publicationDate = PUBLISH_EVENT.equals(dto.getStateAction()) ? LocalDateTime.now() : null;
+
         return Event.builder()
                 .id(event.getId())
                 .title(dto.getTitle() != null ? dto.getTitle() : event.getTitle())
@@ -93,15 +101,25 @@ public class EventMapper {
                 .requestModeration(dto.getRequestModeration() != null ? dto.getRequestModeration()
                         : event.getRequestModeration())
                 .publicationState(getPublicationStateByAction(dto.getStateAction(), event.getPublicationState()))
+                .createDate(event.getCreateDate())
+                .publicationDate(publicationDate)
                 .build();
     }
 
-    private PublicationState getPublicationStateByAction(PublicationStateAction action, PublicationState existing) {
+    private PublicationState getPublicationStateByAction(EventAction action, PublicationState existing) {
         if (action == null) {
             return existing;
         }
-
-        return PUBLISH_EVENT.equals(action) ? PUBLISHED : CANCELED;
+        switch (action) {
+            case SEND_TO_REVIEW:
+                return PENDING;
+            case REJECT_EVENT:
+            case CANCEL_REVIEW:
+                return CANCELED;
+            case PUBLISH_EVENT:
+                return PUBLISHED;
+        }
+        throw new IllegalStateException(String.format(STATE_NOT_FOUND.getValue(), action.name()));
     }
 
 

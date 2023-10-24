@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS categories
 (
     category_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name        VARCHAR(200) UNIQUE NOT NULL
+    name        VARCHAR(50) UNIQUE NOT NULL
 );
 
 COMMENT ON TABLE categories IS 'Категории событий';
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users
 (
     user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name    VARCHAR(250)        NOT NULL,
-    email   VARCHAR(320) UNIQUE NOT NULL
+    email   VARCHAR(254) UNIQUE NOT NULL
 );
 
 COMMENT ON TABLE users IS 'Пользователи';
@@ -54,13 +54,13 @@ CREATE TABLE IF NOT EXISTS events
     initiator_id      BIGINT        NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
     event_dttm        TIMESTAMP     NOT NULL,
     location_id       BIGINT        NOT NULL REFERENCES locations (location_id) ON DELETE RESTRICT,
-    paid              BOOLEAN       NOT NULL DEFAULT false,
-    participant_limit INT           NOT NULL DEFAULT 0,
-    moderated         BOOLEAN       NOT NULL DEFAULT false,
+    paid              BOOLEAN DEFAULT false,
+    participant_limit INT     DEFAULT 0,
+    moderated         BOOLEAN DEFAULT false,
     compilation_id    BIGINT REFERENCES compilations (compilation_id) ON DELETE CASCADE,
     publication_state VARCHAR(10)   NOT NULL,
     publication_dttm  TIMESTAMP,
-    create_dttm       TIMESTAMP     NOT NULL DEFAULT now()
+    create_dttm       TIMESTAMP     NOT NULL
 );
 
 COMMENT ON TABLE events IS 'События';

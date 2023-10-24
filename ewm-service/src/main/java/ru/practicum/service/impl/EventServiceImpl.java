@@ -9,8 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.event.EventDetailDto;
-import ru.practicum.dto.event.EventRequestDto;
+import ru.practicum.dto.event.EventCreateDto;
 import ru.practicum.dto.event.EventShortDto;
+import ru.practicum.dto.event.EventUpdateDto;
 import ru.practicum.dto.event.location.LocationDto;
 import ru.practicum.dto.type.PublicationState;
 import ru.practicum.entity.*;
@@ -28,10 +29,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.dto.type.EventAction.*;
 import static ru.practicum.dto.type.PublicationState.PENDING;
 import static ru.practicum.dto.type.PublicationState.PUBLISHED;
-import static ru.practicum.dto.type.PublicationStateAction.PUBLISH_EVENT;
-import static ru.practicum.dto.type.PublicationStateAction.REJECT_EVENT;
 import static ru.practicum.exception.type.ExceptionType.*;
 
 @Service
@@ -57,9 +57,6 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<EventShortDto> findByUserId(Long userId, Integer from, Integer size) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new NotFoundException(String.format(USER_NOT_FOUND.getValue(), userId));
-        }
         log.info("searching for events by userId = {}. from = {}, size = {}", userId, from, size);
         int page = from != 0 ? from / size : from;
         Pageable pageable = PageRequest.of(page, size);
@@ -70,7 +67,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDetailDto create(Long userId, EventRequestDto dto) {
+    public EventDetailDto create(Long userId, EventCreateDto dto) {
         User initiator = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), userId)));
         Long categoryId = dto.getCategory();
@@ -97,7 +94,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDetailDto update(Long userId, Long eventId, EventRequestDto dto) {
+    public EventDetailDto updateByUser(Long userId, Long eventId, EventUpdateDto dto) {
         User initiator = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), userId)));
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
@@ -122,30 +119,9 @@ public class EventServiceImpl implements EventService {
                                      LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         log.info("searching for events by userIds = {}, states = {}, categoryIds = {}, rangeStart = {}, rangeEnd = {}, "
                 + "from = {}, size = {}", userIds, states, categoryIds, rangeStart, rangeEnd, from, size);
-        BooleanExpression userIdsIn = QEvent.event.initiator.id.in(userIds);
-        BooleanExpression publicationStatesIn = QEvent.event.publicationState.in(states);
-        BooleanExpression categoryIdsIn = QEvent.event.category.id.in(categoryIds);
-        BooleanExpression eventDateAfterOrEq = QEvent.event.eventDate.goe(rangeStart);
-        BooleanExpression eventDateBeforeOrEq = QEvent.event.eventDate.loe(rangeEnd);
         int page = from != 0 ? from / size : from;
         Pageable pageable = PageRequest.of(page, size);
-        BooleanBuilder filters = new BooleanBuilder();
-
-        if (userIds != null && !userIds.isEmpty()) {
-            filters.and(userIdsIn);
-        }
-        if (states != null && !states.isEmpty()) {
-            filters.and(publicationStatesIn);
-        }
-        if (categoryIds != null && !categoryIds.isEmpty()) {
-            filters.and(categoryIdsIn);
-        }
-        if (rangeStart != null) {
-            filters.and(eventDateAfterOrEq);
-        }
-        if (rangeEnd != null) {
-            filters.and(eventDateBeforeOrEq);
-        }
+        BooleanBuilder filters = findFilters(userIds, states, categoryIds, rangeStart, rangeEnd);
         List<Event> events = eventRepository.findAll(filters, pageable).getContent();
 
         log.info("found {} events", events.size());
@@ -153,7 +129,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDetailDto update(Long eventId, EventRequestDto dto) {
+    public EventDetailDto updateByAdmin(Long eventId, EventUpdateDto dto) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format(EVENT_NOT_FOUND.getValue(), eventId)));
 
@@ -183,7 +159,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> mapToShortDtos(List<Event> events) {
         return events.stream()
                 .map(e -> {
-                    Long views = statsService.getViews(e.getCreateDate(), LocalDateTime.now(), createUris(e.getId()));
+                    Long views = statsService.getViews(e.getCreateDate(), e.getEventDate(), createUris(e.getId()));
 
                     return eventMapper.mapToShortDto(e, requestService.findConfirmedRequestsAmount(e.getId()), views);
                 })
@@ -208,7 +184,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private EventDetailDto mapToDetailDto(Event event) {
-        Long views = statsService.getViews(event.getCreateDate(), LocalDateTime.now(), createUris(event.getId()));
+        Long views = statsService.getViews(event.getCreateDate(), event.getEventDate(), createUris(event.getId()));
 
         return eventMapper.mapToDetailDto(event, requestService.findConfirmedRequestsAmount(event.getId()), views);
     }
@@ -221,6 +197,38 @@ public class EventServiceImpl implements EventService {
                                                                   LocalDateTime publicationDate) {
         LocalDateTime plusHour = publicationDate.plusHours(1);
         return eventDate.equals(plusHour) || eventDate.isAfter(plusHour);
+    }
+
+    private BooleanBuilder findFilters(List<Long> userIds, List<PublicationState> states, List<Long> categoryIds,
+                                       LocalDateTime rangeStart, LocalDateTime rangeEnd) {
+        BooleanBuilder filters = new BooleanBuilder();
+
+        if (userIds != null && !userIds.isEmpty()) {
+            BooleanExpression userIdsIn = QEvent.event.initiator.id.in(userIds);
+
+            filters.and(userIdsIn);
+        }
+        if (states != null && !states.isEmpty()) {
+            BooleanExpression publicationStatesIn = QEvent.event.publicationState.in(states);
+
+            filters.and(publicationStatesIn);
+        }
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            BooleanExpression categoryIdsIn = QEvent.event.category.id.in(categoryIds);
+
+            filters.and(categoryIdsIn);
+        }
+        if (rangeStart != null) {
+            BooleanExpression eventDateAfterOrEq = QEvent.event.eventDate.goe(rangeStart);
+
+            filters.and(eventDateAfterOrEq);
+        }
+        if (rangeEnd != null) {
+            BooleanExpression eventDateBeforeOrEq = QEvent.event.eventDate.loe(rangeEnd);
+
+            filters.and(eventDateBeforeOrEq);
+        }
+        return filters;
     }
 
 }

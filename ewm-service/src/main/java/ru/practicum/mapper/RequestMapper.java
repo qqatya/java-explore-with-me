@@ -3,10 +3,12 @@ package ru.practicum.mapper;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.event.request.RequestDto;
 import ru.practicum.dto.event.request.RequestStatusDto;
+import ru.practicum.dto.type.RequestStatus;
 import ru.practicum.entity.Event;
 import ru.practicum.entity.Request;
 import ru.practicum.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,10 +40,14 @@ public class RequestMapper {
     }
 
     public Request mapToEntity(User requester, Event event, boolean isPreModerated) {
+        RequestStatus status = event.getParticipantLimit() == 0 && isPreModerated ? PENDING : isPreModerated ? PENDING
+                : CONFIRMED;
+
         return Request.builder()
                 .requester(requester)
                 .event(event)
-                .status(isPreModerated ? PENDING : CONFIRMED)
+                .status(status)
+                .createDate(LocalDateTime.now())
                 .build();
     }
 }

@@ -14,6 +14,7 @@ public class CompilationMapper {
     public Compilation mapToEntity(CompilationRequestDto dto) {
         return Compilation.builder()
                 .title(dto.getTitle())
+                .pinned(dto.getPinned())
                 .build();
     }
 
@@ -30,6 +31,7 @@ public class CompilationMapper {
         return Compilation.builder()
                 .id(id)
                 .title(dto.getTitle() != null ? dto.getTitle() : existing.getTitle())
+                .pinned(dto.getPinned() != null ? dto.getPinned() : existing.getPinned())
                 .build();
     }
 }

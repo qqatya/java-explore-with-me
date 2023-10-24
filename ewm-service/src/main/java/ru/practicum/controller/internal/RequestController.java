@@ -34,9 +34,9 @@ public class RequestController {
      * @param eventId Идентификатор события
      * @return Созданный запрос
      */
-    @PostMapping("/{eventId}")
+    @PostMapping
     @ResponseStatus(CREATED)
-    public RequestDto create(@PathVariable Long userId, @PathVariable Long eventId) {
+    public RequestDto create(@PathVariable Long userId, @RequestParam Long eventId) {
         return requestService.create(userId, eventId);
     }
 

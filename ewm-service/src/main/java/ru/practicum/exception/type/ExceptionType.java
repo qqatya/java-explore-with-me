@@ -25,7 +25,8 @@ public enum ExceptionType {
     EVENT_INITIATED_BY_REQUESTER("Cannot create requests from event initiator"),
     REQUEST_FOR_UNPUBLISHED_EVENT("Requests for unpublished events are not accepted"),
     REQUEST_ALREADY_REJECTED("Request with id = %s was already rejected"),
-    COMPILATION_NOT_FOUND("Compilation with id = %s was not found"),;
+    COMPILATION_NOT_FOUND("Compilation with id = %s was not found"),
+    STATE_NOT_FOUND("Publication state not found for event action = %s");
 
     private final String value;
 }

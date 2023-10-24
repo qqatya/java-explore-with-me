@@ -27,6 +27,6 @@ public class StatsServiceImpl implements StatsService {
         checkArgument(dtos != null, "stats are null");
         int uriIdx = 0;
 
-        return dtos.get(uriIdx).getHits();
+        return dtos.isEmpty() ? 0 : dtos.get(uriIdx).getHits();
     }
 }

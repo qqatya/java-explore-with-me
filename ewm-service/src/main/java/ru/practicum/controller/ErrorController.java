@@ -1,63 +1,26 @@
 package ru.practicum.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.dto.ErrorInfo;
 import ru.practicum.exception.NotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
-@ControllerAdvice
+import static org.springframework.http.HttpStatus.*;
+
+@RestControllerAdvice
 @Slf4j
-public class ErrorController extends ResponseEntityExceptionHandler {
-
-    /**
-     * Обработчик IllegalArgumentException
-     *
-     * @param e Эксепшн
-     * @return Объект, содержащий сообщение об ошибке
-     */
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorInfo processIllegalArgumentException(IllegalArgumentException e, HttpStatus status) {
-        log.debug(e.getMessage());
-        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
-    }
-
-    /**
-     * Обработчик NotFoundException
-     *
-     * @param e Эксепшн
-     * @return Объект, содержащий сообщение об ошибке
-     */
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorInfo processNotFoundException(NotFoundException e, HttpStatus status) {
-        log.debug(e.getMessage());
-        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
-    }
-
-    /**
-     * Обработчик ValidationException
-     *
-     * @param e Эксепшн
-     * @return Объект, содержащий сообщение об ошибке
-     */
-    @ExceptionHandler(ValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorInfo processValidationException(ValidationException e, HttpStatus status) {
-        log.debug(e.getMessage());
-        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
-    }
+public class ErrorController {
 
     /**
      * Обработчик SecurityException
@@ -66,13 +29,11 @@ public class ErrorController extends ResponseEntityExceptionHandler {
      * @return Объект, содержащий сообщение об ошибке
      */
     @ExceptionHandler(SecurityException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ResponseBody
-    public ErrorInfo processSecurityException(SecurityException e, HttpStatus status) {
+    @ResponseStatus(CONFLICT)
+    public ErrorInfo processSecurityException(SecurityException e) {
         log.debug(e.getMessage());
-        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+        return new ErrorInfo(CONFLICT.name(), CONFLICT.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
     }
-
 
     /**
      * Обработчик IllegalStateException
@@ -81,11 +42,48 @@ public class ErrorController extends ResponseEntityExceptionHandler {
      * @return Объект, содержащий сообщение об ошибке
      */
     @ExceptionHandler(IllegalStateException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ResponseBody
-    public ErrorInfo processIllegalStateException(IllegalStateException e, HttpStatus status) {
+    @ResponseStatus(CONFLICT)
+    public ErrorInfo processIllegalStateException(IllegalStateException e) {
         log.debug(e.getMessage());
-        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+        return new ErrorInfo(CONFLICT.name(), CONFLICT.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+    }
+
+    /**
+     * Обработчик эксепшнов
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class, IllegalArgumentException.class,
+            HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class,
+            MissingServletRequestParameterException.class, NotFoundException.class})
+    @ResponseStatus(code = BAD_REQUEST)
+    public ErrorInfo handleBadRequestException(Exception e) {
+        return new ErrorInfo(BAD_REQUEST.name(), BAD_REQUEST.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+    }
+
+    /**
+     * Обработчик эксепшнов
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler({ConstraintViolationException.class, DataIntegrityViolationException.class})
+    @ResponseStatus(code = CONFLICT)
+    public ErrorInfo handleConflictException(Exception e) {
+        return new ErrorInfo(CONFLICT.name(), CONFLICT.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+    }
+
+    /**
+     * Обработчик NoSuchElementException
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(code = NOT_FOUND)
+    public ErrorInfo handleNoSuchElementException(NoSuchElementException e) {
+        return new ErrorInfo(NOT_FOUND.name(), NOT_FOUND.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
     }
 
     /**
@@ -96,10 +94,10 @@ public class ErrorController extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    public ErrorInfo processException(Exception e, HttpStatus status) {
+    public ErrorInfo processException(Exception e) {
         log.error("Unexpected error: ", e);
-        return new ErrorInfo(status.name(), status.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+        return new ErrorInfo(INTERNAL_SERVER_ERROR.name(), INTERNAL_SERVER_ERROR.getReasonPhrase(), e.getMessage(),
+                LocalDateTime.now());
     }
 
 }

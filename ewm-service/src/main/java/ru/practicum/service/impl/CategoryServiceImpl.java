@@ -15,6 +15,7 @@ import ru.practicum.repository.EventRepository;
 import ru.practicum.service.CategoryService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static ru.practicum.exception.type.ExceptionType.CATEGORY_HAS_EVENTS;
 import static ru.practicum.exception.type.ExceptionType.CATEGORY_NOT_FOUND;
@@ -78,7 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public CategoryDto findById(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format(CATEGORY_NOT_FOUND.getValue(), id)));
+                .orElseThrow(() -> new NoSuchElementException(String.format(CATEGORY_NOT_FOUND.getValue(), id)));
 
         log.info("found category: {}", category);
         return categoryMapper.mapToDto(category);

@@ -67,7 +67,7 @@ public class Event {
     @Column(name = "publication_dttm")
     private LocalDateTime publicationDate;
 
-    @Column(name = "create_dtmm")
+    @Column(name = "create_dttm")
     private LocalDateTime createDate;
 
 }

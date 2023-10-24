@@ -13,7 +13,6 @@ import ru.practicum.mapper.UserMapper;
 import ru.practicum.repository.UserRepository;
 import ru.practicum.service.UserService;
 
-import javax.validation.ValidationException;
 import java.util.List;
 
 import static ru.practicum.exception.type.ExceptionType.EMAIL_ALREADY_EXISTS;
@@ -55,7 +54,7 @@ public class UserServiceImpl implements UserService {
         String email = dto.getEmail();
 
         if (userRepository.findByEmailEquals(email).isPresent()) {
-            throw new ValidationException(String.format(EMAIL_ALREADY_EXISTS.getValue(), email));
+            throw new IllegalStateException(String.format(EMAIL_ALREADY_EXISTS.getValue(), email));
         }
         User user = userRepository.save(userMapper.mapToEntity(dto));
 

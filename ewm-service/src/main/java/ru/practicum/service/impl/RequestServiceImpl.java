@@ -57,7 +57,9 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format(EVENT_NOT_FOUND.getValue(), eventId)));
 
-        checkParticipantLimit(event.getParticipantLimit(), eventId);
+        if (event.getRequestModeration()) {
+            checkParticipantLimitForUpdate(event.getParticipantLimit(), eventId);
+        }
         Integer requestCount = event.getParticipantLimit();
 
         for (Long requestId : dto.getRequestIds()) {
@@ -65,8 +67,9 @@ public class RequestServiceImpl implements RequestService {
                     .orElseThrow(() -> new NotFoundException(String.format(REQUEST_NOT_FOUND.getValue(), requestId)));
 
             checkStatus(request.getStatus(), requestId);
-            if (requestCount < event.getParticipantLimit()) {
+            if (requestCount <= event.getParticipantLimit()) {
                 request.setStatus(dto.getStatus());
+                requestRepository.save(request);
                 requestCount++;
             } else {
                 requestRepository.setRejectedStatusByEventId(eventId);
@@ -104,7 +107,8 @@ public class RequestServiceImpl implements RequestService {
         if (requesterId.equals(event.getInitiator().getId())) {
             throw new IllegalStateException(EVENT_INITIATED_BY_REQUESTER.getValue());
         }
-        checkParticipantLimit(event.getParticipantLimit(), eventId);
+        checkParticipantLimitForCreation(event.getParticipantLimit(), eventId, event.getRequestModeration());
+
         if (!PUBLISHED.equals(event.getPublicationState())) {
             throw new SecurityException(REQUEST_FOR_UNPUBLISHED_EVENT.getValue());
         }
@@ -147,8 +151,21 @@ public class RequestServiceImpl implements RequestService {
         return requestMapper.mapToStatusDto(confirmed, rejected);
     }
 
-    private void checkParticipantLimit(Integer participantLimit, Long eventId) {
-        if (participantLimit == 0 || participantLimit.equals(findConfirmedRequestsAmount(eventId))) {
+    private void checkParticipantLimitForUpdate(Integer participantLimit, Long eventId) {
+        Integer confirmedReqs = findConfirmedRequestsAmount(eventId);
+
+        if (participantLimit <= confirmedReqs) {
+            throw new SecurityException(REACHED_PARTICIPANT_LIMIT.getValue());
+        }
+    }
+
+    private void checkParticipantLimitForCreation(Integer participantLimit, Long eventId, Boolean isPreModerated) {
+        Integer confirmedReqs = findConfirmedRequestsAmount(eventId);
+
+        if (!isPreModerated && participantLimit.equals(confirmedReqs)) {
+            throw new SecurityException(REACHED_PARTICIPANT_LIMIT.getValue());
+        }
+        if (isPreModerated && participantLimit != 0 && participantLimit.equals(confirmedReqs)) {
             throw new SecurityException(REACHED_PARTICIPANT_LIMIT.getValue());
         }
     }

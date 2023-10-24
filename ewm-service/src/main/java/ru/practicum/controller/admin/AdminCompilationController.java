@@ -7,13 +7,15 @@ import ru.practicum.dto.compilation.CompilationRequestDto;
 import ru.practicum.dto.compilation.CompilationDetailDto;
 import ru.practicum.service.CompilationService;
 
+import javax.validation.Valid;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/admin/compilations")
 @RequiredArgsConstructor
 @Validated
-public class CompilationController {
+public class AdminCompilationController {
 
     private final CompilationService compilationService;
 
@@ -25,7 +27,7 @@ public class CompilationController {
      */
     @PostMapping
     @ResponseStatus(CREATED)
-    public CompilationDetailDto create(@RequestBody CompilationRequestDto dto) {
+    public CompilationDetailDto create(@Valid @RequestBody CompilationRequestDto dto) {
         return compilationService.create(dto);
     }
 
@@ -46,7 +48,7 @@ public class CompilationController {
      * @return Обновленная подборка
      */
     @PatchMapping("/{id}")
-    public CompilationDetailDto update(@PathVariable Long id, @RequestBody CompilationRequestDto dto) {
+    public CompilationDetailDto update(@PathVariable Long id,  @Valid @RequestBody CompilationRequestDto dto) {
         return compilationService.update(id, dto);
     }
 }

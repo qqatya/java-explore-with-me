@@ -5,11 +5,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventDetailDto;
-import ru.practicum.dto.event.EventRequestDto;
+import ru.practicum.dto.event.EventUpdateDto;
 import ru.practicum.dto.type.PublicationState;
 import ru.practicum.service.EventService;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/admin/events")
 @RequiredArgsConstructor
 @Validated
-public class EventController {
+public class AdminEventController {
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
@@ -37,12 +37,13 @@ public class EventController {
      * @return Список событий
      */
     @GetMapping
-    public List<EventDetailDto> find(@RequestParam List<Long> users, @RequestParam List<PublicationState> states,
-                                     @RequestParam List<Long> categories,
-                                     @NotNull @DateTimeFormat(pattern = DATE_TIME_PATTERN)
-                                     @RequestParam LocalDateTime rangeStart,
-                                     @NotNull @DateTimeFormat(pattern = DATE_TIME_PATTERN)
-                                     @RequestParam LocalDateTime rangeEnd,
+    public List<EventDetailDto> find(@RequestParam(required = false) List<Long> users,
+                                     @RequestParam(required = false) List<PublicationState> states,
+                                     @RequestParam(required = false) List<Long> categories,
+                                     @DateTimeFormat(pattern = DATE_TIME_PATTERN)
+                                     @RequestParam(required = false) LocalDateTime rangeStart,
+                                     @DateTimeFormat(pattern = DATE_TIME_PATTERN)
+                                     @RequestParam(required = false) LocalDateTime rangeEnd,
                                      @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
                                      @PositiveOrZero @RequestParam(required = false, defaultValue = "10") Integer size) {
         return eventService.find(users, states, categories, rangeStart, rangeEnd, from, size);
@@ -56,9 +57,8 @@ public class EventController {
      * @return Детальная информация о событии
      */
     @PatchMapping("/{eventId}")
-    public EventDetailDto update(@PathVariable Long eventId, @RequestBody EventRequestDto dto) {
-        return eventService.update(eventId, dto);
+    public EventDetailDto update(@PathVariable Long eventId, @Valid @RequestBody EventUpdateDto dto) {
+        return eventService.updateByAdmin(eventId, dto);
     }
-
 
 }
