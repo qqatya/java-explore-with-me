@@ -1,8 +1,9 @@
 package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.dto.compilation.CompilationRequestDto;
+import ru.practicum.dto.compilation.CompilationCreateDto;
 import ru.practicum.dto.compilation.CompilationDetailDto;
+import ru.practicum.dto.compilation.CompilationUpdateDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.entity.Compilation;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Component
 public class CompilationMapper {
 
-    public Compilation mapToEntity(CompilationRequestDto dto) {
+    public Compilation mapToEntity(CompilationCreateDto dto) {
         return Compilation.builder()
                 .title(dto.getTitle())
                 .pinned(dto.getPinned())
@@ -27,7 +28,7 @@ public class CompilationMapper {
                 .build();
     }
 
-    public Compilation mapToEntityForUpdate(Compilation existing, CompilationRequestDto dto, Long id) {
+    public Compilation mapToEntityForUpdate(Compilation existing, CompilationUpdateDto dto, Long id) {
         return Compilation.builder()
                 .id(id)
                 .title(dto.getTitle() != null ? dto.getTitle() : existing.getTitle())

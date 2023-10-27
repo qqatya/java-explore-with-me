@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
+import ru.practicum.dto.type.PublicationState;
 import ru.practicum.entity.Event;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
     List<Event> findByCompilationIdIn(List<Long> ids);
 
     List<Event> findByCompilationId(Long id);
+
+    Optional<Event> findByIdAndPublicationStateEquals(Long id, PublicationState state);
 }

@@ -1,12 +1,14 @@
 package ru.practicum.service;
 
-import ru.practicum.dto.event.EventDetailDto;
 import ru.practicum.dto.event.EventCreateDto;
+import ru.practicum.dto.event.EventDetailDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.EventUpdateDto;
+import ru.practicum.dto.type.EventSort;
 import ru.practicum.dto.type.PublicationState;
 import ru.practicum.entity.Event;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -62,8 +64,8 @@ public interface EventService {
      * @param size        Количество отображаемых элементов
      * @return Список событий
      */
-    List<EventDetailDto> find(List<Long> userIds, List<PublicationState> states, List<Long> categoryIds,
-                              LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
+    List<EventDetailDto> findByAdmin(List<Long> userIds, List<PublicationState> states, List<Long> categoryIds,
+                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 
     /**
      * Изменение события администратором
@@ -81,5 +83,33 @@ public interface EventService {
      * @return Список объектов с краткой информации о событиях
      */
     List<EventShortDto> mapToShortDtos(List<Event> events);
+
+    /**
+     * Поиск событий с возможностью фильтрации
+     *
+     * @param categoryIds   Идентификаторы категорий событий
+     * @param rangeStart    Дата и время, не раньше которых должно произойти событие
+     * @param rangeEnd      Дата и время, не позже которых должно произойти событие
+     * @param from          Начальный элемент
+     * @param size          Количество отображаемых элементов
+     * @param text          Текст для поиска в содержимом аннотации и подробном описании события
+     * @param paid          Поиск только платных/бесплатных событий
+     * @param onlyAvailable Признак поиска событий с неисчерпанным лимитом запросов на участие
+     * @param sort          Параметр сортировки
+     * @param request       Данные о запросе
+     * @return Список событий
+     */
+    List<EventShortDto> find(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
+                             LocalDateTime rangeEnd, Boolean onlyAvailable, EventSort sort, Integer from, Integer size,
+                             HttpServletRequest request);
+
+    /**
+     * Поиск опубликованного события по идентификатору
+     *
+     * @param id      Идентификатор события
+     * @param request Данные о запросе
+     * @return Событие
+     */
+    EventDetailDto findPublishedById(Long id, HttpServletRequest request);
 
 }

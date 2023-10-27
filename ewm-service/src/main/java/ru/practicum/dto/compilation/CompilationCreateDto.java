@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompilationRequestDto {
+public class CompilationCreateDto {
 
     private List<Long> events;
 

@@ -6,8 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.dto.compilation.CompilationRequestDto;
+import ru.practicum.dto.compilation.CompilationCreateDto;
 import ru.practicum.dto.compilation.CompilationDetailDto;
+import ru.practicum.dto.compilation.CompilationUpdateDto;
 import ru.practicum.entity.Compilation;
 import ru.practicum.entity.Event;
 import ru.practicum.exception.NotFoundException;
@@ -39,7 +40,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventService eventService;
 
     @Override
-    public CompilationDetailDto create(CompilationRequestDto dto) {
+    public CompilationDetailDto create(CompilationCreateDto dto) {
         Compilation compilation = compilationRepository.save(compilationMapper.mapToEntity(dto));
         log.info("created compilation: {}", compilation);
 
@@ -70,7 +71,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public CompilationDetailDto update(Long id, CompilationRequestDto dto) {
+    public CompilationDetailDto update(Long id, CompilationUpdateDto dto) {
         Compilation existing = compilationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format(COMPILATION_NOT_FOUND.getValue(), id)));
         Compilation updated = compilationRepository.save(compilationMapper.mapToEntityForUpdate(existing, dto, id));

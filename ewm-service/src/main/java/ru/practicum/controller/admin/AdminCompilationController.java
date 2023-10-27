@@ -3,13 +3,15 @@ package ru.practicum.controller.admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.compilation.CompilationRequestDto;
+import ru.practicum.dto.compilation.CompilationCreateDto;
 import ru.practicum.dto.compilation.CompilationDetailDto;
+import ru.practicum.dto.compilation.CompilationUpdateDto;
 import ru.practicum.service.CompilationService;
 
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/admin/compilations")
@@ -27,7 +29,7 @@ public class AdminCompilationController {
      */
     @PostMapping
     @ResponseStatus(CREATED)
-    public CompilationDetailDto create(@Valid @RequestBody CompilationRequestDto dto) {
+    public CompilationDetailDto create(@Valid @RequestBody CompilationCreateDto dto) {
         return compilationService.create(dto);
     }
 
@@ -37,6 +39,7 @@ public class AdminCompilationController {
      * @param id Идентификатор подборки
      */
     @DeleteMapping("/{id}")
+    @ResponseStatus(NO_CONTENT)
     public void delete(@PathVariable Long id) {
         compilationService.delete(id);
     }
@@ -48,7 +51,7 @@ public class AdminCompilationController {
      * @return Обновленная подборка
      */
     @PatchMapping("/{id}")
-    public CompilationDetailDto update(@PathVariable Long id,  @Valid @RequestBody CompilationRequestDto dto) {
+    public CompilationDetailDto update(@PathVariable Long id,  @Valid @RequestBody CompilationUpdateDto dto) {
         return compilationService.update(id, dto);
     }
 }

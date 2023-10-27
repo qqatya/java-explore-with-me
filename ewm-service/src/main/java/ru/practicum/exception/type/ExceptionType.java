@@ -24,7 +24,7 @@ public enum ExceptionType {
     REQUEST_DUPLICATE("Request with requesterId = %s and eventId = %s already exists"),
     EVENT_INITIATED_BY_REQUESTER("Cannot create requests from event initiator"),
     REQUEST_FOR_UNPUBLISHED_EVENT("Requests for unpublished events are not accepted"),
-    REQUEST_ALREADY_REJECTED("Request with id = %s was already rejected"),
+    REQUEST_ALREADY_CANCELED("Request with id = %s was already canceled"),
     COMPILATION_NOT_FOUND("Compilation with id = %s was not found"),
     STATE_NOT_FOUND("Publication state not found for event action = %s");
 

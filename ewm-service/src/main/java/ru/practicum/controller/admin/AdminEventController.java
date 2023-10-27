@@ -14,6 +14,8 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @RestController
 @RequestMapping("/admin/events")
 @RequiredArgsConstructor
@@ -46,7 +48,10 @@ public class AdminEventController {
                                      @RequestParam(required = false) LocalDateTime rangeEnd,
                                      @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
                                      @PositiveOrZero @RequestParam(required = false, defaultValue = "10") Integer size) {
-        return eventService.find(users, states, categories, rangeStart, rangeEnd, from, size);
+        if (rangeStart != null && rangeEnd != null) {
+            checkArgument(rangeStart.isBefore(rangeEnd));
+        }
+        return eventService.findByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     /**

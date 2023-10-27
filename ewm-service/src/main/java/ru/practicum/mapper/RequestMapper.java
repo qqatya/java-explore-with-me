@@ -40,8 +40,7 @@ public class RequestMapper {
     }
 
     public Request mapToEntity(User requester, Event event, boolean isPreModerated) {
-        RequestStatus status = event.getParticipantLimit() == 0 && isPreModerated ? PENDING : isPreModerated ? PENDING
-                : CONFIRMED;
+        RequestStatus status = event.getParticipantLimit() == 0 || !isPreModerated ? CONFIRMED : PENDING;
 
         return Request.builder()
                 .requester(requester)
@@ -50,4 +49,5 @@ public class RequestMapper {
                 .createDate(LocalDateTime.now())
                 .build();
     }
+
 }

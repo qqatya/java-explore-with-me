@@ -8,15 +8,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.dto.event.EventDetailDto;
 import ru.practicum.dto.event.EventCreateDto;
+import ru.practicum.dto.event.EventDetailDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.EventUpdateDto;
 import ru.practicum.dto.event.location.LocationDto;
+import ru.practicum.dto.type.EventSort;
 import ru.practicum.dto.type.PublicationState;
 import ru.practicum.entity.*;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.EventMapper;
+import ru.practicum.mapper.HitRequestMapper;
 import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.UserRepository;
@@ -25,11 +27,16 @@ import ru.practicum.service.LocationService;
 import ru.practicum.service.RequestService;
 import ru.practicum.service.StatsService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import static ru.practicum.dto.type.EventAction.*;
+import static ru.practicum.dto.type.EventAction.PUBLISH_EVENT;
+import static ru.practicum.dto.type.EventAction.REJECT_EVENT;
+import static ru.practicum.dto.type.EventSort.EVENT_DATE;
 import static ru.practicum.dto.type.PublicationState.PENDING;
 import static ru.practicum.dto.type.PublicationState.PUBLISHED;
 import static ru.practicum.exception.type.ExceptionType.*;
@@ -53,6 +60,8 @@ public class EventServiceImpl implements EventService {
     private final RequestService requestService;
 
     private final StatsService statsService;
+
+    private final HitRequestMapper hitRequestMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -115,8 +124,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventDetailDto> find(List<Long> userIds, List<PublicationState> states, List<Long> categoryIds,
-                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+    public List<EventDetailDto> findByAdmin(List<Long> userIds, List<PublicationState> states, List<Long> categoryIds,
+                                            LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         log.info("searching for events by userIds = {}, states = {}, categoryIds = {}, rangeStart = {}, rangeEnd = {}, "
                 + "from = {}, size = {}", userIds, states, categoryIds, rangeStart, rangeEnd, from, size);
         int page = from != 0 ? from / size : from;
@@ -164,6 +173,47 @@ public class EventServiceImpl implements EventService {
                     return eventMapper.mapToShortDto(e, requestService.findConfirmedRequestsAmount(e.getId()), views);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventShortDto> find(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
+                                    LocalDateTime rangeEnd, Boolean onlyAvailable, EventSort sort, Integer from,
+                                    Integer size, HttpServletRequest request) {
+        BooleanBuilder filters = findPublicFilters(text, categoryIds, paid, rangeStart, rangeEnd);
+
+        filters.and(QEvent.event.publicationState.eq(PUBLISHED));
+        log.info("performing public events search by text = {}, categoryIds = {}, paid = {}, rangeStart = {}, "
+                        + "rangeEnd = {}, onlyAvailable = {}, sort = {}, from = {},  size = {}", text, categoryIds,
+                paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        int page = from != 0 ? from / size : from;
+        Pageable pageable = PageRequest.of(page, size);
+        List<Event> events = eventRepository.findAll(filters, pageable).getContent();
+
+        if (onlyAvailable) {
+            events = events.stream()
+                    .filter(e -> e.getParticipantLimit() < requestService.findConfirmedRequestsAmount(e.getId()))
+                    .collect(Collectors.toList());
+        }
+        List<EventShortDto> shortDtos = mapToShortDtos(events);
+
+        statsService.create(hitRequestMapper.mapToDto(request.getRequestURI(), request.getRemoteAddr()));
+        if (sort != null) {
+            return shortDtos.stream()
+                    .sorted(findComparator(sort))
+                    .collect(Collectors.toList());
+        }
+        return shortDtos;
+    }
+
+    @Override
+    public EventDetailDto findPublishedById(Long id, HttpServletRequest request) {
+        Event event = eventRepository.findByIdAndPublicationStateEquals(id, PUBLISHED)
+                .orElseThrow(() -> new NoSuchElementException(String.format(EVENT_NOT_FOUND.getValue(), id)));
+        log.info("found event: {}", event);
+        EventDetailDto dto = mapToDetailDto(event);
+
+        statsService.create(hitRequestMapper.mapToDto(request.getRequestURI(), request.getRemoteAddr()));
+        return dto;
     }
 
     private boolean isEventDateWithinTwoHours(LocalDateTime eventDate) {
@@ -229,6 +279,51 @@ public class EventServiceImpl implements EventService {
             filters.and(eventDateBeforeOrEq);
         }
         return filters;
+    }
+
+    private BooleanBuilder findPublicFilters(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+                                             LocalDateTime rangeEnd) {
+        BooleanBuilder filters = new BooleanBuilder();
+
+        if (text != null && !text.isBlank()) {
+            BooleanExpression annotationEq = QEvent.event.annotation.likeIgnoreCase(text);
+            BooleanExpression descriptionEq = QEvent.event.description.likeIgnoreCase(text);
+
+            filters.and(annotationEq);
+            filters.or(descriptionEq);
+        }
+        if (categories != null && !categories.isEmpty()) {
+            BooleanExpression categoriesIn = QEvent.event.category.id.in(categories);
+
+            filters.and(categoriesIn);
+        }
+        if (paid != null) {
+            BooleanExpression paidEq = QEvent.event.paid.eq(paid);
+
+            filters.and(paidEq);
+        }
+        if (rangeStart != null) {
+            BooleanExpression eventDateAfterOrEq = QEvent.event.eventDate.goe(rangeStart);
+
+            filters.and(eventDateAfterOrEq);
+        }
+        if (rangeEnd != null) {
+            BooleanExpression eventDateBeforeOrEq = QEvent.event.eventDate.loe(rangeEnd);
+
+            filters.and(eventDateBeforeOrEq);
+        }
+        if (rangeStart == null && rangeEnd == null) {
+            BooleanExpression eventDateAfterNow = QEvent.event.eventDate.gt(LocalDateTime.now());
+
+            filters.and(eventDateAfterNow);
+        }
+        return filters;
+    }
+
+    private Comparator<EventShortDto> findComparator(EventSort sort) {
+        return EVENT_DATE.equals(sort)
+                ? Comparator.comparing(EventShortDto::getEventDate).reversed()
+                : Comparator.comparing(EventShortDto::getViews).reversed();
     }
 
 }

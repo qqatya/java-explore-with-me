@@ -127,9 +127,9 @@ public class RequestServiceImpl implements RequestService {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException(String.format(REQUEST_NOT_FOUND.getValue(), requestId)));
 
-        checkArgument(!REJECTED.equals(request.getStatus()),
-                String.format(REQUEST_ALREADY_REJECTED.getValue(), requestId));
-        request.setStatus(REJECTED);
+        checkArgument(!CANCELED.equals(request.getStatus()),
+                String.format(REQUEST_ALREADY_CANCELED.getValue(), requestId));
+        request.setStatus(CANCELED);
         Request canceled = requestRepository.save(request);
 
         log.info("requestId = {} has been canceled", requestId);

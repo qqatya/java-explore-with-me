@@ -1,5 +1,7 @@
 package ru.practicum.service;
 
+import ru.practicum.dto.HitRequestDto;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,5 +16,12 @@ public interface StatsService {
      * @return Количество просмотров
      */
     Long getViews(LocalDateTime start, LocalDateTime end, List<String> uris);
+
+    /**
+     * Сохранение информации о новом запросе
+     *
+     * @param dto Объект, содержащий данные о запросе
+     */
+    void create(HitRequestDto dto);
 
 }

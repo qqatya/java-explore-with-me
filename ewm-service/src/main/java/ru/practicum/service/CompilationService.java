@@ -1,7 +1,8 @@
 package ru.practicum.service;
 
-import ru.practicum.dto.compilation.CompilationRequestDto;
+import ru.practicum.dto.compilation.CompilationCreateDto;
 import ru.practicum.dto.compilation.CompilationDetailDto;
+import ru.practicum.dto.compilation.CompilationUpdateDto;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface CompilationService {
      * @param dto Объект, содержащий данные о подборке
      * @return Созданная подборка
      */
-    CompilationDetailDto create(CompilationRequestDto dto);
+    CompilationDetailDto create(CompilationCreateDto dto);
 
     /**
      * Удаление подборки
@@ -29,7 +30,7 @@ public interface CompilationService {
      * @param dto Объект, содержащий данные о подборке
      * @return Обновленная подборка
      */
-    CompilationDetailDto update(Long id, CompilationRequestDto dto);
+    CompilationDetailDto update(Long id, CompilationUpdateDto dto);
 
     /**
      * Поиск подборок событий
