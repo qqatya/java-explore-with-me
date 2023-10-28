@@ -2,6 +2,7 @@ package ru.practicum.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,7 +23,7 @@ public class ErrorController {
      * @param e Эксепшн
      * @return Объект, содержащий сообщение об ошибке
      */
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, MissingServletRequestParameterException.class})
     @ResponseStatus(BAD_REQUEST)
     public ErrorInfo processSecurityException(IllegalArgumentException e) {
         log.debug(e.getMessage());
