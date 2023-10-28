@@ -86,6 +86,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompilationDetailDto> find(Boolean pinned, Integer from, Integer size) {
         int page = from != 0 ? from / size : from;
         Pageable pageable = PageRequest.of(page, size);
@@ -101,6 +102,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompilationDetailDto findById(Long id) {
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format(COMPILATION_NOT_FOUND.getValue(), id)));

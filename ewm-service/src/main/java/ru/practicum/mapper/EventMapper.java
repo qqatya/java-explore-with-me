@@ -57,7 +57,6 @@ public class EventMapper {
                 .participantLimit(dto.getParticipantLimit())
                 .requestModeration(dto.getRequestModeration())
                 .publicationState(PENDING)
-                .createDate(LocalDateTime.now())
                 .build();
     }
 

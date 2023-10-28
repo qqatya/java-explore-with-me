@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -166,16 +167,22 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> mapToShortDtos(List<Event> events) {
+        Map<Long, Long> views = statsService.getViews(findMinCreateDate(events), findMaxEventDate(events),
+                createUris(events));
+
         return events.stream()
                 .map(e -> {
-                    Long views = statsService.getViews(e.getCreateDate(), e.getEventDate(), createUris(e.getId()));
+                    Long view = views.get(e.getId()) != null ? views.get(e.getId()) : 0;
 
-                    return eventMapper.mapToShortDto(e, requestService.findConfirmedRequestsAmount(e.getId()), views);
+                    return eventMapper
+                            .mapToShortDto(e, requestService.findConfirmedRequestsAmount(e.getId()),
+                                    view);
                 })
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> find(String text, List<Long> categoryIds, Boolean paid, LocalDateTime rangeStart,
                                     LocalDateTime rangeEnd, Boolean onlyAvailable, EventSort sort, Integer from,
                                     Integer size, HttpServletRequest request) {
@@ -206,6 +213,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventDetailDto findPublishedById(Long id, HttpServletRequest request) {
         Event event = eventRepository.findByIdAndPublicationStateEquals(id, PUBLISHED)
                 .orElseThrow(() -> new NoSuchElementException(String.format(EVENT_NOT_FOUND.getValue(), id)));
@@ -234,13 +242,34 @@ public class EventServiceImpl implements EventService {
     }
 
     private EventDetailDto mapToDetailDto(Event event) {
-        Long views = statsService.getViews(event.getCreateDate(), event.getEventDate(), createUris(event.getId()));
+        Long eventId = event.getId();
+        Map<Long, Long> views = statsService.getViews(event.getCreateDate(), event.getEventDate(),
+                createUris(eventId));
+        Long view = views.get(eventId) != null ? views.get(eventId) : 0;
 
-        return eventMapper.mapToDetailDto(event, requestService.findConfirmedRequestsAmount(event.getId()), views);
+        return eventMapper.mapToDetailDto(event, requestService.findConfirmedRequestsAmount(event.getId()), view);
     }
 
     private List<String> createUris(Long eventId) {
         return List.of("/events/" + eventId);
+    }
+
+    private LocalDateTime findMinCreateDate(List<Event> events) {
+        return events.stream()
+                .map(Event::getCreateDate)
+                .min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.now());
+    }
+
+    private LocalDateTime findMaxEventDate(List<Event> events) {
+        return events.stream()
+                .map(Event::getEventDate)
+                .max(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.now());
+    }
+
+    private List<String> createUris(List<Event> events) {
+        return events.stream().map(e -> "/events/" + e.getId()).collect(Collectors.toList());
     }
 
     private boolean eventDateIsAfterOrEqHourBeforePublicationDate(LocalDateTime eventDate,

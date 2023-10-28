@@ -4,6 +4,7 @@ import ru.practicum.dto.HitRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface StatsService {
 
@@ -13,9 +14,9 @@ public interface StatsService {
      * @param start Дата и время начала диапазона, за который нужно выгрузить статистику
      * @param end   Дата и время конца диапазона, за который нужно выгрузить статистику
      * @param uris  Список uri, для которых нужно выгрузить статистику
-     * @return Количество просмотров
+     * @return Ключ - идентификатор события, значение - количество просмотров
      */
-    Long getViews(LocalDateTime start, LocalDateTime end, List<String> uris);
+    Map<Long, Long> getViews(LocalDateTime start, LocalDateTime end, List<String> uris);
 
     /**
      * Сохранение информации о новом запросе

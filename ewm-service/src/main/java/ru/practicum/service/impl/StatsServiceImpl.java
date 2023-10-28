@@ -6,13 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.client.StatsClient;
 import ru.practicum.dto.HitRequestDto;
-import ru.practicum.dto.StatsDto;
 import ru.practicum.service.StatsService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 @Slf4j
@@ -22,17 +23,12 @@ public class StatsServiceImpl implements StatsService {
     private final StatsClient client;
 
     @Override
-    public Long getViews(LocalDateTime start, LocalDateTime end, List<String> uris) {
+    public Map<Long, Long> getViews(LocalDateTime start, LocalDateTime end, List<String> uris) {
         ResponseEntity<Object> response = client.getStats(start, end, uris, true);
-        List<StatsDto> dtos = null;
-        if (response.getBody() != null) {
-            List<Map<String, Object>> responseBody = (List<Map<String, Object>>) response.getBody();
+        checkArgument(response.getBody() != null, "response body is null");
+        List<Map<String, Object>> responseBody = (List<Map<String, Object>>) response.getBody();
 
-            dtos = getStats(responseBody);
-        }
-        int uriIdx = 0;
-
-        return dtos == null || dtos.isEmpty() ? 0 : dtos.get(uriIdx).getHits();
+        return getStatsMap(responseBody);
     }
 
     @Override
@@ -41,17 +37,15 @@ public class StatsServiceImpl implements StatsService {
         client.create(dto);
     }
 
-    private List<StatsDto> getStats(List<Map<String, Object>> responseBody) {
-        List<StatsDto> result = new ArrayList<>();
+    private Map<Long, Long> getStatsMap(List<Map<String, Object>> responseBody) {
+        Map<Long, Long> result = new HashMap<>();
 
         for (Map<String, Object> map : responseBody) {
-            StatsDto dto = StatsDto.builder()
-                    .app((String) map.get("app"))
-                    .uri((String) map.get("uri"))
-                    .hits(((Integer) map.get("hits")).longValue())
-                    .build();
+            String uri = (String) map.get("uri");
+            int idIdx = uri.length() - 1;
+            Long eventId = Long.valueOf(uri.substring(idIdx));
 
-            result.add(dto);
+            result.put(eventId, Long.valueOf((Integer) map.get("hits")));
         }
         return result;
     }
