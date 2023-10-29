@@ -61,12 +61,10 @@ public class RequestServiceImpl implements RequestService {
             checkParticipantLimitForUpdate(event.getParticipantLimit(), eventId);
         }
         Integer requestCount = event.getParticipantLimit();
+        List<Request> requests = requestRepository.findByIdIn(dto.getRequestIds());
 
-        for (Long requestId : dto.getRequestIds()) {
-            Request request = requestRepository.findById(requestId)
-                    .orElseThrow(() -> new NotFoundException(String.format(REQUEST_NOT_FOUND.getValue(), requestId)));
-
-            checkStatus(request.getStatus(), requestId);
+        for (Request request : requests) {
+            checkStatus(request.getStatus(), request.getId());
             if (requestCount <= event.getParticipantLimit()) {
                 request.setStatus(dto.getStatus());
                 requestRepository.save(request);
