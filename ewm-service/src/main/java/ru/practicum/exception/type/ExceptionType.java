@@ -26,7 +26,9 @@ public enum ExceptionType {
     REQUEST_FOR_UNPUBLISHED_EVENT("Requests for unpublished events are not accepted"),
     REQUEST_ALREADY_CANCELED("Request with id = %s was already canceled"),
     COMPILATION_NOT_FOUND("Compilation with id = %s was not found"),
-    STATE_NOT_FOUND("Publication state not found for event action = %s");
+    STATE_NOT_FOUND("Publication state not found for event action = %s"),
+    ALREADY_SUBSCRIBED("UserId = %s is already subscribed on userId = %s"),
+    NOT_SUBSCRIBED("UserId = %s has to be subscribed on userId = %s in order to cancel subscription");
 
     private final String value;
 }
