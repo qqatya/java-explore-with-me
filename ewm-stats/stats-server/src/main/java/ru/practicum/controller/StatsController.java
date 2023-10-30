@@ -52,7 +52,8 @@ public class StatsController {
                                    @RequestParam LocalDateTime end,
                                    @RequestParam(required = false) List<String> uris,
                                    @RequestParam(required = false, defaultValue = "false") Boolean unique) {
-        checkArgument(start.isBefore(end), "start date should be less than or equal to end date");
+        checkArgument(start.isBefore(end) || start.equals(end),
+                "start date should be less than or equal to end date");
         return statsService.getStats(start, end, uris, unique);
     }
 }

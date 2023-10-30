@@ -30,6 +30,8 @@ services:
   ewm-service-db:
     image: postgres:13.7
     container_name: ewm-service-db
+    ports:
+      - "5433:5432"
     volumes:
       - /var/lib/postgresql/data/
     environment:
