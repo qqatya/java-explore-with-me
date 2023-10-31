@@ -111,19 +111,19 @@ public class EventController {
     }
 
     /**
-     * Получение подписчиком списка актуальных событий пользователя
+     * Получение пользователем списка актуальных событий пользователей, на которых он подписан
      *
-     * @param userId      Идентификатор текущего пользователя (подписчика)
-     * @param publisherId Идентификатор пользователя, на которого текущий подписан
-     * @param from        Начальный элемент
-     * @param size        Количество отображаемых элементов
+     * @param userId       Идентификатор текущего пользователя (подписчика)
+     * @param publisherIds Идентификаторы пользователей, на которых текущий подписан
+     * @param from         Начальный элемент
+     * @param size         Количество отображаемых элементов
      * @return Список событий
      */
-    @GetMapping("/publisher/{publisherId}")
-    public List<EventShortDto> findByPublisherId(@PathVariable Long userId, @PathVariable Long publisherId,
-                                                 @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
-                                                 @PositiveOrZero @RequestParam(required = false, defaultValue = "10") Integer size) {
-        return eventService.findByPublisherId(userId, publisherId, from, size);
+    @GetMapping("/publishers")
+    public List<EventShortDto> findByPublisherIds(@PathVariable Long userId, @RequestParam List<Long> publisherIds,
+                                                  @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                  @PositiveOrZero @RequestParam(required = false, defaultValue = "10") Integer size) {
+        return eventService.findByPublisherIds(userId, publisherIds, from, size);
     }
 
 }

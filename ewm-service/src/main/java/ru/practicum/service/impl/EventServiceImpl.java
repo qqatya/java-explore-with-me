@@ -227,20 +227,19 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventShortDto> findByPublisherId(Long subscriberId, Long publisherId, Integer from, Integer size) {
+    public List<EventShortDto> findByPublisherIds(Long subscriberId, List<Long> publisherIds, Integer from, Integer size) {
         User subscriber = userRepository.findById(subscriberId)
                 .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), subscriberId)));
-        User publisher = userRepository.findById(publisherId)
-                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), publisherId)));
+        List<User> publishers = userRepository.findByIdInAndSubscribersContaining(publisherIds, subscriber);
 
-        if (!publisher.getSubscribers().contains(subscriber)) {
-            throw new ValidationException(String.format(NOT_SUBSCRIBED.getValue(), subscriberId, publisherId));
+        if (!publishers.stream().map(User::getId).collect(Collectors.toSet()).containsAll(publisherIds)) {
+            throw new ValidationException(String.format(NOT_SUBSCRIBED.getValue(), subscriberId, publisherIds));
         }
-        log.info("searching for published events by publisherId = {}. from = {}, size = {}", publisherId, from, size);
+        log.info("searching for published events by publisherIds: {}. from = {}, size = {}", publisherIds, from, size);
         int page = from != 0 ? from / size : from;
         Pageable pageable = PageRequest.of(page, size);
         List<Event> events = eventRepository
-                .findByInitiatorIdAndEventDateGreaterThanAndPublicationStateEquals(publisherId, LocalDateTime.now(),
+                .findByInitiatorIdInAndEventDateGreaterThanAndPublicationStateEquals(publisherIds, LocalDateTime.now(),
                         PUBLISHED, pageable);
 
         log.info("found {} events", events.size());

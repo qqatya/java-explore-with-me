@@ -113,14 +113,14 @@ public interface EventService {
     EventDetailDto findPublishedById(Long id, HttpServletRequest request);
 
     /**
-     * Получение списка актуальных событий, опубликованных пользователем, на которого подписан текущий пользователь
+     * Получение пользователем списка актуальных событий пользователей, на которых он подписан
      *
-     * @param subscriberId Идентификатор текущего пользователя
-     * @param publisherId  Идентификатор пользователя, на которого текущий подписан
+     * @param subscriberId Идентификатор текущего пользователя (подписчика)
+     * @param publisherIds Идентификаторы пользователей, на которых текущий подписан
      * @param from         Начальный элемент
      * @param size         Количество отображаемых элементов
      * @return Список событий
      */
-    List<EventShortDto> findByPublisherId(Long subscriberId, Long publisherId, Integer from, Integer size);
+    List<EventShortDto> findByPublisherIds(Long subscriberId, List<Long> publisherIds, Integer from, Integer size);
 
 }

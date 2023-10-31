@@ -26,9 +26,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
 
     Optional<Event> findByIdAndPublicationStateEquals(Long id, PublicationState state);
 
-    List<Event> findByInitiatorIdAndEventDateGreaterThanAndPublicationStateEquals(Long initiatorId,
-                                                                                  LocalDateTime eventDate,
-                                                                                  PublicationState state,
-                                                                                  Pageable pageable);
+    List<Event> findByInitiatorIdInAndEventDateGreaterThanAndPublicationStateEquals(List<Long> initiatorId,
+                                                                                    LocalDateTime eventDate,
+                                                                                    PublicationState state,
+                                                                                    Pageable pageable);
 
 }

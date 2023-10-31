@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByIdAndSubscriptionsContaining(Long userId, User user);
 
+    List<User> findByIdInAndSubscribersContaining(List<Long> userId, User user);
+
 }
