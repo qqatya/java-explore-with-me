@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Добавление нового пользователя (id=1)",
+			"name": "Добавление нового пользователя (id=135)",
 			"event": [
 				{
 					"listen": "test",
@@ -57,7 +57,7 @@
 			"response": []
 		},
 		{
-			"name": "Добавление нового пользователя (id=2)",
+			"name": "Добавление нового пользователя (id=136)",
 			"event": [
 				{
 					"listen": "test",
@@ -107,7 +107,7 @@
 			"response": []
 		},
 		{
-			"name": "Добавление нового пользователя (id=3)",
+			"name": "Добавление нового пользователя (id=137)",
 			"event": [
 				{
 					"listen": "test",
@@ -157,7 +157,7 @@
 			"response": []
 		},
 		{
-			"name": "Оформление подписки на userId=1",
+			"name": "Оформление подписки на userId=135",
 			"event": [
 				{
 					"listen": "test",
@@ -185,22 +185,22 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/users/2/subscriptions/1",
+					"raw": "{{baseUrl}}/users/136/subscriptions/135",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"users",
-						"2",
+						"136",
 						"subscriptions",
-						"1"
+						"135"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Оформление подписки на userId=3",
+			"name": "Оформление подписки на userId=137",
 			"event": [
 				{
 					"listen": "test",
@@ -228,71 +228,22 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/users/2/subscriptions/3",
+					"raw": "{{baseUrl}}/users/136/subscriptions/137",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"users",
-						"2",
+						"136",
 						"subscriptions",
-						"3"
+						"137"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Добавление категории",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
-							"    pm.response.to.have.status(201);",
-							"    pm.response.to.be.withBody;",
-							"    pm.response.to.be.json;",
-							"});",
-							"",
-							"const body = pm.response.json();",
-							"",
-							"pm.test(\"Категория должна содержать поля: id, name\", function () {",
-							"pm.expect(body).to.have.property('id');",
-							"pm.expect(body).to.have.property('name');",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"USB12\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/admin/categories",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"admin",
-						"categories"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Добавление события (initiatorId=1)",
+			"name": "Добавление события (initiatorId=135)",
 			"event": [
 				{
 					"listen": "test",
@@ -339,13 +290,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/users/1/events",
+					"raw": "{{baseUrl}}/users/135/events",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"users",
-						"1",
+						"135",
 						"events"
 					]
 				}
@@ -353,7 +304,7 @@
 			"response": []
 		},
 		{
-			"name": "Добавление события (initiatorId=3)",
+			"name": "Добавление события (initiatorId=137)",
 			"event": [
 				{
 					"listen": "test",
@@ -400,13 +351,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/users/3/events",
+					"raw": "{{baseUrl}}/users/137/events",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"users",
-						"3",
+						"137",
 						"events"
 					]
 				}
@@ -414,7 +365,7 @@
 			"response": []
 		},
 		{
-			"name": "Публикация события (id=1)",
+			"name": "Публикация события (id=106)",
 			"event": [
 				{
 					"listen": "test",
@@ -462,21 +413,21 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/admin/events/1",
+					"raw": "{{baseUrl}}/admin/events/106",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"admin",
 						"events",
-						"1"
+						"106"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Публикация события (id=2)",
+			"name": "Публикация события (id=107)",
 			"event": [
 				{
 					"listen": "test",
@@ -524,14 +475,14 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/admin/events/2",
+					"raw": "{{baseUrl}}/admin/events/107",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"admin",
 						"events",
-						"2"
+						"107"
 					]
 				}
 			},
@@ -570,7 +521,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/users/2/events/publishers?publisherIds=1&publisherIds=3&from=0&size=10",
+					"raw": "{{baseUrl}}/users/2/events/publishers?publisherIds=135&publisherIds=137&from=0&size=10",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -583,11 +534,11 @@
 					"query": [
 						{
 							"key": "publisherIds",
-							"value": "1"
+							"value": "135"
 						},
 						{
 							"key": "publisherIds",
-							"value": "3"
+							"value": "137"
 						},
 						{
 							"key": "from",
@@ -621,15 +572,15 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/users/2/subscriptions/1",
+					"raw": "{{baseUrl}}/users/136/subscriptions/135",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"users",
-						"2",
+						"136",
 						"subscriptions",
-						"1"
+						"135"
 					]
 				}
 			},
