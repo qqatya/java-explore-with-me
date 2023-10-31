@@ -28,7 +28,7 @@ public enum ExceptionType {
     COMPILATION_NOT_FOUND("Compilation with id = %s was not found"),
     STATE_NOT_FOUND("Publication state not found for event action = %s"),
     ALREADY_SUBSCRIBED("UserId = %s is already subscribed on userId = %s"),
-    NOT_SUBSCRIBED("UserId = %s has to be subscribed on userId = %s in order to cancel subscription");
+    NOT_SUBSCRIBED("UserId = %s has to be subscribed on userId = %s");
 
     private final String value;
 }

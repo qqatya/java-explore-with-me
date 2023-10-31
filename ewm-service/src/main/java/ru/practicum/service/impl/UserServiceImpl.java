@@ -85,6 +85,9 @@ public class UserServiceImpl implements UserService {
         subscriber.getSubscriptions().add(user);
         User saved = userRepository.save(subscriber);
 
+        user.getSubscribers().add(subscriber);
+        userRepository.save(user);
+
         log.info("userId = {} is now subscribed on userId = {}", subscriberId, userId);
         return userMapper.mapToSubscriptionDto(saved);
     }

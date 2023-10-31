@@ -110,4 +110,20 @@ public class EventController {
         return requestService.changeStatus(userId, eventId, dto);
     }
 
+    /**
+     * Получение подписчиком списка актуальных событий пользователя
+     *
+     * @param userId      Идентификатор текущего пользователя (подписчика)
+     * @param publisherId Идентификатор пользователя, на которого текущий подписан
+     * @param from        Начальный элемент
+     * @param size        Количество отображаемых элементов
+     * @return Список событий
+     */
+    @GetMapping("/publisher/{publisherId}")
+    public List<EventShortDto> findByPublisherId(@PathVariable Long userId, @PathVariable Long publisherId,
+                                                 @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                 @PositiveOrZero @RequestParam(required = false, defaultValue = "10") Integer size) {
+        return eventService.findByPublisherId(userId, publisherId, from, size);
+    }
+
 }

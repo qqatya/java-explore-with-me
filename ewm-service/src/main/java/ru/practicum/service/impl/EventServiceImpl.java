@@ -28,6 +28,7 @@ import ru.practicum.service.RequestService;
 import ru.practicum.service.StatsService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -222,6 +223,28 @@ public class EventServiceImpl implements EventService {
 
         statsService.create(hitRequestMapper.mapToDto(request.getRequestURI(), request.getRemoteAddr()));
         return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventShortDto> findByPublisherId(Long subscriberId, Long publisherId, Integer from, Integer size) {
+        User subscriber = userRepository.findById(subscriberId)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), subscriberId)));
+        User publisher = userRepository.findById(publisherId)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), publisherId)));
+
+        if (!publisher.getSubscribers().contains(subscriber)) {
+            throw new ValidationException(String.format(NOT_SUBSCRIBED.getValue(), subscriberId, publisherId));
+        }
+        log.info("searching for published events by publisherId = {}. from = {}, size = {}", publisherId, from, size);
+        int page = from != 0 ? from / size : from;
+        Pageable pageable = PageRequest.of(page, size);
+        List<Event> events = eventRepository
+                .findByInitiatorIdAndEventDateGreaterThanAndPublicationStateEquals(publisherId, LocalDateTime.now(),
+                        PUBLISHED, pageable);
+
+        log.info("found {} events", events.size());
+        return mapToShortDtos(events);
     }
 
     private boolean isEventDateWithinTwoHours(LocalDateTime eventDate) {
