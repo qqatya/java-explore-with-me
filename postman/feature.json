@@ -521,13 +521,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/users/2/events/publishers?publisherIds=135&publisherIds=137&from=0&size=10",
+					"raw": "{{baseUrl}}/users/136/events/publishers?publisherIds=135&publisherIds=137&from=0&size=10",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"users",
-						"2",
+						"136",
 						"events",
 						"publishers"
 					],
