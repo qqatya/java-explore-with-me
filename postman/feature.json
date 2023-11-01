@@ -1,0 +1,617 @@
+{
+	"info": {
+		"_postman_id": "b35e959e-ae9d-4f37-bab3-904f74f132c9",
+		"name": "Explore with me - Subscription feature tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26498388"
+	},
+	"item": [
+		{
+			"name": "Добавление нового пользователя (id=135)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('name');",
+							"pm.expect(body).to.have.property('email');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Marco Hahn\",\n    \"email\": \"Daisha10@yahoo.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление нового пользователя (id=136)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('name');",
+							"pm.expect(body).to.have.property('email');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Noah Heidenreich\",\n    \"email\": \"Shaina91@yahoo.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление нового пользователя (id=137)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('name');",
+							"pm.expect(body).to.have.property('email');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Jean Green\",\n    \"email\": \"Keeley.Christiansen80@yahoo.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Оформление подписки на userId=135",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Информация о подписке должна содержать поля: id, name, subscriptionUserIds\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('name');",
+							"pm.expect(body).to.have.property('subscriptionUserIds');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/136/subscriptions/135",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"136",
+						"subscriptions",
+						"135"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Оформление подписки на userId=137",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Информация о подписке должна содержать поля: id, name, subscriptionUserIds\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('name');",
+							"pm.expect(body).to.have.property('subscriptionUserIds');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/136/subscriptions/137",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"136",
+						"subscriptions",
+						"137"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление события (initiatorId=135)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(201);  ",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('title');",
+							"pm.expect(body).to.have.property('annotation');",
+							"pm.expect(body).to.have.property('category');",
+							"pm.expect(body).to.have.property('paid');",
+							"pm.expect(body).to.have.property('eventDate');",
+							"pm.expect(body).to.have.property('initiator');",
+							"pm.expect(body).to.have.property('description');",
+							"pm.expect(body).to.have.property('participantLimit');",
+							"pm.expect(body).to.have.property('state');",
+							"pm.expect(body).to.have.property('createdOn');",
+							"pm.expect(body).to.have.property('location');",
+							"pm.expect(body).to.have.property('requestModeration');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"annotation\": \"Veniam sed voluptatem cumque expedita quia omnis. Ut odio voluptatem voluptatem dolorem quo minus sunt illum. Omnis harum dolorum minima vel. Nisi labore architecto cupiditate voluptates incidunt fugit provident consequatur aut. Consequatur tempora sit temporibus magni eius eos minus ex dolor.\",\n    \"category\": 1,\n    \"description\": \"Laborum adipisci iure. Ut consequatur voluptas amet sit aut possimus natus. Eius magnam eligendi quis delectus cupiditate alias. Nesciunt beatae asperiores voluptatem beatae ut.\\n \\rTempora aut vitae ut quaerat. Quaerat id voluptatem at facilis culpa blanditiis nemo ea. Repellendus excepturi error repellat debitis error et placeat quod fugiat.\\n \\rMolestiae libero cum sint rerum adipisci atque quos. Quisquam enim est odio quisquam possimus accusamus vero eaque omnis. Ut eum voluptatem sit. Nobis natus suscipit quas et minus. Facilis quia corrupti. Quam sapiente unde exercitationem debitis quia ut in nihil.\",\n    \"eventDate\": \"2024-11-01 04:36:32\",\n    \"location\": {\n        \"lat\": -56.2977,\n        \"lon\": -169.6605\n    },\n    \"paid\": \"true\",\n    \"participantLimit\": \"934\",\n    \"requestModeration\": \"false\",\n    \"title\": \"Sequi molestias et.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/135/events",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"135",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление события (initiatorId=137)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(201);  ",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('title');",
+							"pm.expect(body).to.have.property('annotation');",
+							"pm.expect(body).to.have.property('category');",
+							"pm.expect(body).to.have.property('paid');",
+							"pm.expect(body).to.have.property('eventDate');",
+							"pm.expect(body).to.have.property('initiator');",
+							"pm.expect(body).to.have.property('description');",
+							"pm.expect(body).to.have.property('participantLimit');",
+							"pm.expect(body).to.have.property('state');",
+							"pm.expect(body).to.have.property('createdOn');",
+							"pm.expect(body).to.have.property('location');",
+							"pm.expect(body).to.have.property('requestModeration');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"annotation\": \"Exercitationem doloremque temporibus et hic esse sequi exercitationem corporis aliquid. Voluptates sequi sint quis tempore aut dolores ipsa. Deleniti odio rem debitis nostrum eius eveniet quo amet.\",\n    \"category\": 1,\n    \"description\": \"Doloribus aut itaque voluptatem voluptatum sint facere vitae ullam. Sed reiciendis ipsa occaecati assumenda. Iste quia voluptatem repellendus asperiores et doloremque possimus quis. Illo et unde dolores autem aut maiores ea libero.\\n \\rAccusantium accusantium animi quia occaecati quia. Sit qui sed hic consequatur eos dignissimos consectetur dolores. Esse non eos eum incidunt impedit. Et earum voluptatem iure vel. Nihil repellat ducimus quis eveniet.\\n \\rQuos id dignissimos aspernatur adipisci. Eum aut iure. Voluptatum dolorem id et. Hic culpa minus possimus porro quaerat.\",\n    \"eventDate\": \"2024-11-01 04:36:32\",\n    \"location\": {\n        \"lat\": 30.0404,\n        \"lon\": 32.1797\n    },\n    \"paid\": \"true\",\n    \"participantLimit\": \"437\",\n    \"requestModeration\": \"false\",\n    \"title\": \"Id delectus nemo accusantium qui distinctio.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/137/events",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"137",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Публикация события (id=106)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+							"    pm.response.to.be.ok;    ",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, publishedOn, location, requestModeration\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('title');",
+							"pm.expect(body).to.have.property('annotation');",
+							"pm.expect(body).to.have.property('category');",
+							"pm.expect(body).to.have.property('paid');",
+							"pm.expect(body).to.have.property('eventDate');",
+							"pm.expect(body).to.have.property('initiator');",
+							"pm.expect(body).to.have.property('description');",
+							"pm.expect(body).to.have.property('participantLimit');",
+							"pm.expect(body).to.have.property('state');",
+							"pm.expect(body).to.have.property('createdOn');",
+							"pm.expect(body).to.have.property('publishedOn');",
+							"pm.expect(body).to.have.property('location');",
+							"pm.expect(body).to.have.property('requestModeration');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"annotation\": \"Veniam sed voluptatem cumque expedita quia omnis. Ut odio voluptatem voluptatem dolorem quo minus sunt illum. Omnis harum dolorum minima vel. Nisi labore architecto cupiditate voluptates incidunt fugit provident consequatur aut. Consequatur tempora sit temporibus magni eius eos minus ex dolor.\",\n    \"category\": 1,\n    \"description\": \"Laborum adipisci iure. Ut consequatur voluptas amet sit aut possimus natus. Eius magnam eligendi quis delectus cupiditate alias. Nesciunt beatae asperiores voluptatem beatae ut.\\n \\rTempora aut vitae ut quaerat. Quaerat id voluptatem at facilis culpa blanditiis nemo ea. Repellendus excepturi error repellat debitis error et placeat quod fugiat.\\n \\rMolestiae libero cum sint rerum adipisci atque quos. Quisquam enim est odio quisquam possimus accusamus vero eaque omnis. Ut eum voluptatem sit. Nobis natus suscipit quas et minus. Facilis quia corrupti. Quam sapiente unde exercitationem debitis quia ut in nihil.\",\n    \"eventDate\": \"2024-11-01 04:36:32\",\n    \"location\": {\n        \"lat\": -56.2977,\n        \"lon\": -169.6605\n    },\n    \"paid\": \"true\",\n    \"participantLimit\": \"934\",\n    \"requestModeration\": \"false\",\n    \"title\": \"Sequi molestias et.\",\n    \"stateAction\": \"PUBLISH_EVENT\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/events/106",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"events",
+						"106"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Публикация события (id=107)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+							"    pm.response.to.be.ok;    ",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, publishedOn, location, requestModeration\", function () {",
+							"pm.expect(body).to.have.property('id');",
+							"pm.expect(body).to.have.property('title');",
+							"pm.expect(body).to.have.property('annotation');",
+							"pm.expect(body).to.have.property('category');",
+							"pm.expect(body).to.have.property('paid');",
+							"pm.expect(body).to.have.property('eventDate');",
+							"pm.expect(body).to.have.property('initiator');",
+							"pm.expect(body).to.have.property('description');",
+							"pm.expect(body).to.have.property('participantLimit');",
+							"pm.expect(body).to.have.property('state');",
+							"pm.expect(body).to.have.property('createdOn');",
+							"pm.expect(body).to.have.property('publishedOn');",
+							"pm.expect(body).to.have.property('location');",
+							"pm.expect(body).to.have.property('requestModeration');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"annotation\": \"Exercitationem doloremque temporibus et hic esse sequi exercitationem corporis aliquid. Voluptates sequi sint quis tempore aut dolores ipsa. Deleniti odio rem debitis nostrum eius eveniet quo amet.\",\n    \"category\": 1,\n    \"description\": \"Doloribus aut itaque voluptatem voluptatum sint facere vitae ullam. Sed reiciendis ipsa occaecati assumenda. Iste quia voluptatem repellendus asperiores et doloremque possimus quis. Illo et unde dolores autem aut maiores ea libero.\\n \\rAccusantium accusantium animi quia occaecati quia. Sit qui sed hic consequatur eos dignissimos consectetur dolores. Esse non eos eum incidunt impedit. Et earum voluptatem iure vel. Nihil repellat ducimus quis eveniet.\\n \\rQuos id dignissimos aspernatur adipisci. Eum aut iure. Voluptatum dolorem id et. Hic culpa minus possimus porro quaerat.\",\n    \"eventDate\": \"2024-11-01 04:36:32\",\n    \"location\": {\n        \"lat\": 30.0404,\n        \"lon\": 32.1797\n    },\n    \"paid\": \"true\",\n    \"participantLimit\": \"437\",\n    \"requestModeration\": \"false\",\n    \"title\": \"Id delectus nemo accusantium qui distinctio.\",\n    \"stateAction\": \"PUBLISH_EVENT\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/events/107",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"events",
+						"107"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение подписчиком списка актуальных событий пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"const body = pm.response.json();",
+							"",
+							"pm.test(\"Тело ответа должно являться массивом\"), function () {",
+							"    pm.expect(body).is.an('array');",
+							"}",
+							"",
+							"const element = body[0];",
+							"",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, confirmedRequests, eventDate, initiator, paid, views\", function () {",
+							"    pm.expect(element).to.contain.keys('id', 'title', 'annotation', 'category', 'confirmedRequests', 'eventDate', 'initiator', 'paid', 'views');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/136/events/publishers?publisherIds=135&publisherIds=137&from=0&size=10",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"136",
+						"events",
+						"publishers"
+					],
+					"query": [
+						{
+							"key": "publisherIds",
+							"value": "135"
+						},
+						{
+							"key": "publisherIds",
+							"value": "137"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаление подписки",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/136/subscriptions/135",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"136",
+						"subscriptions",
+						"135"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

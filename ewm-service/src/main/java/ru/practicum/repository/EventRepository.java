@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.dto.type.PublicationState;
 import ru.practicum.entity.Event;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,4 +25,10 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
     List<Event> findByCompilationId(Long id);
 
     Optional<Event> findByIdAndPublicationStateEquals(Long id, PublicationState state);
+
+    List<Event> findByInitiatorIdInAndEventDateGreaterThanAndPublicationStateEquals(List<Long> initiatorId,
+                                                                                    LocalDateTime eventDate,
+                                                                                    PublicationState state,
+                                                                                    Pageable pageable);
+
 }

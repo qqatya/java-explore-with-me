@@ -95,3 +95,13 @@ COMMENT ON COLUMN requests.create_dttm IS 'Дата создания';
 COMMENT ON COLUMN requests.event_id IS 'Идентификатор события';
 COMMENT ON COLUMN requests.requester_id IS 'Идентификатор инициатора';
 COMMENT ON COLUMN requests.status IS 'Статус запроса';
+
+CREATE TABLE IF NOT EXISTS subscriptions
+(
+    user_id       INTEGER REFERENCES users (user_id) ON DELETE CASCADE,
+    subscriber_id INTEGER REFERENCES users (user_id) ON DELETE CASCADE
+);
+
+COMMENT ON TABLE subscriptions IS 'Подписки';
+COMMENT ON COLUMN subscriptions.user_id IS 'Идентификатор пользователя, на которого подписались';
+COMMENT ON COLUMN subscriptions.subscriber_id IS 'Идентификатор подписчика';

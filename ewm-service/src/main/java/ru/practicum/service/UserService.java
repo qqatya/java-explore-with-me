@@ -1,6 +1,7 @@
 package ru.practicum.service;
 
 import ru.practicum.dto.user.UserDto;
+import ru.practicum.dto.user.UserSubscriptionDto;
 
 import java.util.List;
 
@@ -37,5 +38,23 @@ public interface UserService {
      * @param id Идентификатор пользователя
      */
     void delete(Long id);
+
+    /**
+     * Добавление подписки на пользователя
+     *
+     * @param subscriberId Идентификатор текущего пользователя
+     * @param userId       Идентификатор пользователя, на которого оформляется подписка
+     * @return Объект, содержащий данные о пользователе и его подписках
+     */
+    UserSubscriptionDto subscribe(Long subscriberId, Long userId);
+
+    /**
+     * Удаление подписки на пользователя
+     *
+     * @param subscriberId Идентификатор текущего пользователя
+     * @param userId       Идентификатор пользователя, от которого текущий отписывается
+     * @return Объект, содержащий данные о пользователе и его подписках
+     */
+    UserSubscriptionDto unsubscribe(Long subscriberId, Long userId);
 
 }

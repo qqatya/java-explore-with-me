@@ -28,6 +28,7 @@ import ru.practicum.service.RequestService;
 import ru.practicum.service.StatsService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -222,6 +223,31 @@ public class EventServiceImpl implements EventService {
 
         statsService.create(hitRequestMapper.mapToDto(request.getRequestURI(), request.getRemoteAddr()));
         return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventShortDto> findByPublisherIds(Long subscriberId, List<Long> publisherIds, Integer from, Integer size) {
+        User subscriber = userRepository.findById(subscriberId)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), subscriberId)));
+        List<User> publishers = userRepository.findByIdInAndSubscribersContaining(publisherIds, subscriber);
+
+        if (!isUserSubscribedOnPublishers(publishers, publisherIds)) {
+            throw new ValidationException(String.format(NOT_SUBSCRIBED.getValue(), subscriberId, publisherIds));
+        }
+        log.info("searching for published events by publisherIds: {}. from = {}, size = {}", publisherIds, from, size);
+        int page = from != 0 ? from / size : from;
+        Pageable pageable = PageRequest.of(page, size);
+        List<Event> events = eventRepository
+                .findByInitiatorIdInAndEventDateGreaterThanAndPublicationStateEquals(publisherIds, LocalDateTime.now(),
+                        PUBLISHED, pageable);
+
+        log.info("found {} events", events.size());
+        return mapToShortDtos(events);
+    }
+
+    private boolean isUserSubscribedOnPublishers(List<User> publishers, List<Long> requestPublisherIds) {
+        return publishers.stream().map(User::getId).collect(Collectors.toSet()).containsAll(requestPublisherIds);
     }
 
     private boolean isEventDateWithinTwoHours(LocalDateTime eventDate) {
