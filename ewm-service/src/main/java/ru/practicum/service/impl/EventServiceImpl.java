@@ -232,7 +232,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND.getValue(), subscriberId)));
         List<User> publishers = userRepository.findByIdInAndSubscribersContaining(publisherIds, subscriber);
 
-        if (!publishers.stream().map(User::getId).collect(Collectors.toSet()).containsAll(publisherIds)) {
+        if (!isUserSubscribedOnPublishers(publishers, publisherIds)) {
             throw new ValidationException(String.format(NOT_SUBSCRIBED.getValue(), subscriberId, publisherIds));
         }
         log.info("searching for published events by publisherIds: {}. from = {}, size = {}", publisherIds, from, size);
@@ -244,6 +244,10 @@ public class EventServiceImpl implements EventService {
 
         log.info("found {} events", events.size());
         return mapToShortDtos(events);
+    }
+
+    private boolean isUserSubscribedOnPublishers(List<User> publishers, List<Long> requestPublisherIds) {
+        return publishers.stream().map(User::getId).collect(Collectors.toSet()).containsAll(requestPublisherIds);
     }
 
     private boolean isEventDateWithinTwoHours(LocalDateTime eventDate) {
